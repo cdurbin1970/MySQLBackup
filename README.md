@@ -1,6 +1,6 @@
 MySQLBackup
 
-A MySQLBackup written in C# using VS2013.
+A MySQLBackup GUI written in C# using VS2013.
 
 - Libraries -
 
