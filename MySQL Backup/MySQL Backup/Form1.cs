@@ -16,6 +16,12 @@ using MySql.Data.Common;
 using iniReader;
 using Encryption_Lib;
 
+/*
+ ITEMS Completed
+ 
+
+ 
+ */
 
 namespace MySQL_Backup {
     public partial class frMain : Form {
@@ -51,8 +57,27 @@ namespace MySQL_Backup {
             toolTip1.ShowAlways = true;
 
             // Set up the ToolTip text for the Button and Checkbox.
-            toolTip1.SetToolTip(this.cbDBDirs, "Store the backups in individual directories named after the database.");
-            
+            toolTip1.SetToolTip(this.cbDBDirs, @"Store the backups in individual directories named after the database.");
+            toolTip1.SetToolTip(this.cbCompress, @"Should the dump files be zipped after backup?");
+            toolTip1.SetToolTip(this.cbRemoveDumpFile, @"Should the .sql file be removed after the backup is complete?");
+            toolTip1.SetToolTip(this.tbHostName, @"Enter the host name or IP address of the MySQL database server.");
+            toolTip1.SetToolTip(this.tbUserName, @"Enter the MySQL username.");
+            toolTip1.SetToolTip(this.tbPassword, @"Enter the password of the MySQL user.");
+            toolTip1.SetToolTip(this.tbPort, @"Enter the port for the MySQL server (Default is 3306).");
+            toolTip1.SetToolTip(this.cbSelectDatabases, @"Click to select or unselect all the listed databases.");
+            toolTip1.SetToolTip(this.clbDatabases, @"Select the databases you would like to backup.");
+            toolTip1.SetToolTip(this.tbDumpLocation, @"Directory where mysqldump.exe is located.");
+            toolTip1.SetToolTip(this.tbMySQLDumpOptions, @"Extra options to supply to mysqldump during the backup.");
+            toolTip1.SetToolTip(this.tbSaveLocation, @"Directory where the backup file(s) will be saved.");
+            toolTip1.SetToolTip(this.tbDaystoKeep, @"How many days worth of backups should we keep?");
+            toolTip1.SetToolTip(this.cbSendEmail, @"Should I send emails after the backup is complete?");
+            toolTip1.SetToolTip(this.tbSMTPServer, @"The host name or IP address of the SMTP server.");
+            toolTip1.SetToolTip(this.tbSMTPUserName, @"SMTP server user name.");
+            toolTip1.SetToolTip(this.tbSMTPPassword, @"SMTP server user's password.");
+            toolTip1.SetToolTip(this.tbSMTPPort, @"Port for the SMTP server (Default is 25).");
+            toolTip1.SetToolTip(this.tbEmailAddress, @"Email address to send reports to.");
+            toolTip1.SetToolTip(this.tbFromAddress, @"The from email address.");
+                        
             // Create our fileinfo object
             var objFileInfo = new FileInfo(Application.ExecutablePath);
             // To get the lastwrite time of this file
@@ -589,7 +614,7 @@ namespace MySQL_Backup {
                 if (cbCompress.Checked) {
                     File.Move(@"temp\" + dateStamp + dbName + ".zip", dbSaveDirectory + dateStamp + dbName + ".zip");
                 }
-                // Did we dlete the .sql dump file?
+                // Did we delete the .sql dump file?
                 if (!cbRemoveDumpFile.Checked) {
                     File.Move(@"temp\" + dateStamp + dbName + ".sql", dbSaveDirectory + dateStamp + dbName + ".sql");
                 }                
