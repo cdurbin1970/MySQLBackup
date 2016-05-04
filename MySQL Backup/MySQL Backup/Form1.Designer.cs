@@ -93,6 +93,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.buCancelTest = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -205,6 +206,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.buCancelTest);
             this.tabPage1.Controls.Add(this.rtbOutput);
             this.tabPage1.Controls.Add(this.buTestConfig);
             this.tabPage1.Controls.Add(this.groupBox3);
@@ -739,6 +741,18 @@
             // 
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
             // 
+            // buCancelTest
+            // 
+            this.buCancelTest.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buCancelTest.Location = new System.Drawing.Point(717, 387);
+            this.buCancelTest.Name = "buCancelTest";
+            this.buCancelTest.Size = new System.Drawing.Size(110, 25);
+            this.buCancelTest.TabIndex = 26;
+            this.buCancelTest.Text = "Cancel Test";
+            this.buCancelTest.UseVisualStyleBackColor = true;
+            this.buCancelTest.Visible = false;
+            this.buCancelTest.Click += new System.EventHandler(this.buCancelTest_Click);
+            // 
             // frMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -837,6 +851,7 @@
         private System.Windows.Forms.TextBox tbFromAddress;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.CheckBox cbSendEmail;
+        private System.Windows.Forms.Button buCancelTest;
     }
 }
 

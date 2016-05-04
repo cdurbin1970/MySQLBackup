@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using MySql.Data.MySqlClient;
 using MySql.Data.Common;
 using iniReader;
@@ -31,7 +32,11 @@ namespace MySQL_Backup {
         // If key is changed after a config file is saved, the passwords will not be decrypted properly.
         string encryptionKey = "LjjS5PDETyN98JZDgGtdPlhbk7-fBCVN";
 
+        // Not the best way to do this, but trying to get status flags from processes running in a shell/seperate 
+        // thread is not easy
         string error = "";
+        int processID = 0;
+        bool processTerminated = false;
              
         public frMain() {
             InitializeComponent();
@@ -495,6 +500,7 @@ namespace MySQL_Backup {
   
             rtbOutput.Text = "";
 
+            buCancelTest.Visible = true;
             //Get the first database name from the list that has been checked. We'll use that.
             for (int x = 0; x < clbDatabases.Items.Count; x++) {
                 if (clbDatabases.GetItemChecked(x)) {
@@ -681,13 +687,17 @@ namespace MySQL_Backup {
             catch (Exception ex) {
                 utilityFunctions.displayErrorMessage(ex.Message, "Error", false);
                 return;
-            }            
+            }
+            // Get the process ID so we can kill it if necessary.
+            processID = proc.Id;
             error = proc.StandardError.ReadToEnd();
-            //wait for the process to finish...
-            proc.WaitForExit();
+                   
+            if (proc.ExitCode == 1 || processTerminated) {
+                error = "mysqldump.exe process was terminated.";
+            }
             //close the process...
-            proc.Close();
-            if (error != "") {
+            proc.Close();            
+            if (error != "")  {
                 // Cleanup the empty file 
                 try {
                     File.Delete(@"temp\" + parameters[6] + parameters[4] + ".sql");
@@ -769,6 +779,22 @@ namespace MySQL_Backup {
                 buTestEmail.Enabled = false;
             }
 
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //                                                                                   //
+        //    Cancel the running mysqldump process                                           //
+        //                                                                                   //
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        private void buCancelTest_Click(object sender, EventArgs e) {
+
+            buCancelTest.Visible = false;  
+            Process p = Process.GetProcessById(processID);
+            if (p != null || !p.HasExited) {
+                p.Kill();
+                processTerminated = true;                
+            }             
         }
         
  
