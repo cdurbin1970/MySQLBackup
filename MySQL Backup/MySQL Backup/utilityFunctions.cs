@@ -23,17 +23,61 @@ using Encryption_Lib;
         /// <summary>
         /// Displays an error message box.
         /// </summary>
+        /// <param name="displayCancel">
+        /// Should the MessageBox display a Cancel button as well as an OK button? 
+        /// </param>
+        /// <param name="caption">
+        /// The MessageBox caption
+        /// </param>
+        /// <param name="errorMessage">
+        /// Error message to display
+        /// </param>
         /// <returns>
         /// Returns bool true if OK is clicked, otherwise it returns false.
         /// </returns> 
-        public static bool displayErrorMessage(string errorMessage, string caption) {
-            if (System.Windows.Forms.MessageBox.Show(errorMessage, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.OK) {
-                return true;
+        public static bool displayErrorMessage(string errorMessage, string caption, bool displayCancel) {
+            if (displayCancel) {
+                if (System.Windows.Forms.MessageBox.Show(errorMessage, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.OK) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
             else {
-                return false;
+                System.Windows.Forms.MessageBox.Show(errorMessage, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);                
             }
-        
+            return true;
+        }
+
+        /// <summary>
+        /// Displays an information message box.
+        /// </summary>
+        /// <param name="displayCancel">
+        /// Should the MessageBox display a Cancel button as well as an OK button? 
+        /// </param>
+        /// <param name="caption">
+        /// The MessageBox caption
+        /// </param>
+        /// <param name="message">
+        /// Message to display
+        /// </param>
+        /// <returns>
+        /// Returns bool true if OK is clicked, otherwise it returns false.
+        /// </returns> 
+        public static bool displayInformationMessage(string message, string caption, bool displayCancel) {
+            if (displayCancel) {
+                if (System.Windows.Forms.MessageBox.Show(message, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                System.Windows.Forms.MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            return true;
         }
        
        /// <summary>
@@ -82,7 +126,6 @@ using Encryption_Lib;
                errorMsg = "e-mail address is required to send email.";
                return true;
            }
-
            // Confirm that there is an "@" and a "." in the e-mail address, and in the correct order.
            if (txtEmailID.IndexOf("@") > -1) {
                if (txtEmailID.IndexOf(".", txtEmailID.IndexOf("@")) > txtEmailID.IndexOf("@")) {
@@ -179,15 +222,10 @@ using Encryption_Lib;
 
             var lastColorSaved = System.Drawing.Color.Empty;
 
-
-            foreach (System.Windows.Forms.Control child in thisform.Controls)
-            {
-                if (child is System.Windows.Forms.GroupBox)
-                {
-                    foreach (System.Windows.Forms.Control tb in child.Controls)
-                    {
-                        if (tb is System.Windows.Forms.TextBox || tb is System.Windows.Forms.ComboBox || child is MaskedTextBox)
-                        {
+            foreach (System.Windows.Forms.Control child in thisform.Controls) {
+                if (child is System.Windows.Forms.GroupBox) {
+                    foreach (System.Windows.Forms.Control tb in child.Controls) {
+                        if (tb is System.Windows.Forms.TextBox || tb is System.Windows.Forms.ComboBox || child is MaskedTextBox) {
                             tb.Enter += (s, e) =>
                             {
                                 var control = (System.Windows.Forms.Control)s;
@@ -201,8 +239,7 @@ using Encryption_Lib;
                         }
                     }
                 }
-                if (child is System.Windows.Forms.TextBox || child is System.Windows.Forms.ComboBox || child is MaskedTextBox)
-                {
+                if (child is System.Windows.Forms.TextBox || child is System.Windows.Forms.ComboBox || child is MaskedTextBox) {
                     child.Enter += (s, e) =>
                     {
                         var control = (System.Windows.Forms.Control)s;
@@ -226,9 +263,5 @@ using Encryption_Lib;
                     foreach (T c in FindVisualChildren<T>(child))
                         yield return c;
             }
-        }*/
-
-        
-   
-   
+        }*/   
    }

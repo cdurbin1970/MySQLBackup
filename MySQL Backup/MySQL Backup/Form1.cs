@@ -108,12 +108,12 @@ namespace MySQL_Backup {
             }
             else {               
                 if (tbPort.Text == "") {
-                    errorProvider1.SetError(tbPort, "Please enter the connection port.");
+                    errorProvider1.SetError(tbPort, "Please enter the MySQL connection port.");
                     tbPort.BackColor = Color.LightPink;
                     tbPort.Focus();
                 }
                 if (tbPassword.Text == "") {
-                    errorProvider1.SetError(tbPassword, "Please enter the user password.");
+                    errorProvider1.SetError(tbPassword, "Please enter the MySQL user password.");
                     tbPassword.BackColor = Color.LightPink;
                     tbPassword.Focus();
                 }
@@ -127,7 +127,7 @@ namespace MySQL_Backup {
                     tbHostName.BackColor = Color.LightPink;
                     tbHostName.Focus();
                 }
-                MessageBox.Show("Please enter the  information before trying to connect!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                utilityFunctions.displayErrorMessage("Please enter the  information before trying to connect!", "Error",false);
             }
         }
 
@@ -154,7 +154,7 @@ namespace MySQL_Backup {
         private void saveConfigFile(object sender, EventArgs e) {
             // Do some checking for errors and report them.
             if (tbDumpLocation.Text == "") {
-                if (!utilityFunctions.displayErrorMessage("MySQLDump.exe location is empty.\nThis program depends on MySQLDump.exe to perform the backup.\nContinuing with the save will result in a config file that does not work.","Error")) {
+                if (!utilityFunctions.displayErrorMessage("MySQLDump.exe location is empty.\nThis program depends on MySQLDump.exe to perform the backup.\nContinuing with the save will result in a config file that does not work.","Error",true)) {
                     return;
                 }
             }
@@ -168,7 +168,7 @@ namespace MySQL_Backup {
                 fileNameToSave = tsslCurrentConfig.Text;
             }            
             if(sender == saveAsToolStripMenuItem) {
-                saveFileDialog1.InitialDirectory = @Directory.GetCurrentDirectory() + "\\configs";
+                saveFileDialog1.InitialDirectory = @Directory.GetCurrentDirectory() + @"\configs";
                 saveFileDialog1.FileName = tbHostName.Text + ".conf";            
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
                     fileNameToSave = saveFileDialog1.FileName;
@@ -216,10 +216,10 @@ namespace MySQL_Backup {
                 File.WriteAllLines(fileNameToSave, lines);
                 tsslCurrentConfig.Text = fileNameToSave;
                 saveToolStripMenuItem.Enabled = true;
-                MessageBox.Show("Config file saved successfully.", "Config Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                utilityFunctions.displayInformationMessage("Config file saved successfully.", "Config Saved",false);
             }
             catch {
-                utilityFunctions.displayErrorMessage("Error saving config file.", "Error Saving Config");
+                utilityFunctions.displayErrorMessage("Error saving config file.", "Error Saving Config",false);
             }
        }   
 
@@ -231,7 +231,7 @@ namespace MySQL_Backup {
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
             openFileDialog1.Filter = "Config Files (*.conf)|*.conf";
-            openFileDialog1.InitialDirectory = @Directory.GetCurrentDirectory() + "\\configs";
+            openFileDialog1.InitialDirectory = @Directory.GetCurrentDirectory() + @"\configs";
             if (openFileDialog1.ShowDialog() == DialogResult.OK) {                
                 //clear everything out to make sure we're putting in correct items.                
                 clearConfigItems(clearAllItemsToolStripMenuItem, e);
@@ -423,10 +423,10 @@ namespace MySQL_Backup {
             if (tbSMTPServer.Text !="" && tbEmailAddress.Text != "" && tbFromAddress.Text !="") {   
                 string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text,tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQLBackup Test Message", "This is a test message." });
                 if (message == "OK") {
-                    MessageBox.Show("Email sent successfully.", "Email Sent", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    utilityFunctions.displayInformationMessage("Email sent successfully.", "Email Sent", false);
                 }
                 else {
-                    utilityFunctions.displayErrorMessage(message, "Error");
+                    utilityFunctions.displayErrorMessage(message, "Error", false);
                 }                
             }
             else {
@@ -446,7 +446,7 @@ namespace MySQL_Backup {
                     tbSMTPServer.BackColor = Color.LightPink;
                     tbSMTPServer.Focus();
                 }
-                MessageBox.Show("Please enter the information before trying to send a test email!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                utilityFunctions.displayErrorMessage("Please enter the information before trying to send a test email!", "Error",false);
             }
         
         }
@@ -460,12 +460,14 @@ namespace MySQL_Backup {
         private void buTestConfig_Click(object sender, EventArgs e) {
             // Since this is a test, we're only going to do one backup.
             // To make this a quicker process, we could probably open up a zip archive and dump the output directly to it.
-            // I chose to create the dump file, create a zip file, move the dump file into it and then delete the dump file.
+            // I chose to create the dump file in a temp directory, create a zip file if asked, move the dump file into it, delete the dump file 
+            // if appropriate then move the file into the save location.
 
             string dbName = "";
             string dbSaveDirectory = "";
             DateTime now = DateTime.Now;
-
+            string dateStamp = now.ToString("yyyy_MM_dd_HH_mm_ss_");
+  
             rtbOutput.Text = "";
 
             //Get the first database name from the list that has been checked. We'll use that.
@@ -477,16 +479,16 @@ namespace MySQL_Backup {
             }
 
             if (dbName == "") {
-                utilityFunctions.displayErrorMessage("Please select one database from the list before trying to test.", "Database Selection Error");
+                utilityFunctions.displayErrorMessage("Please select one database from the list before trying to test.", "Database Selection Error", false);
                 return;
             }
 
             // Check to see if we should be using individual dirs for each database
             if (cbDBDirs.Checked) {
-                dbSaveDirectory = tbSaveLocation.Text + "/" + dbName + "/";
+                dbSaveDirectory = tbSaveLocation.Text + @"\" + dbName + @"\";
             }
             else {
-                dbSaveDirectory = tbSaveLocation.Text + "/";
+                dbSaveDirectory = tbSaveLocation.Text + @"\";
             }
 
             //put it all together, notice that were using the --result-file command line. This allows us to not have to use a streamwriter with redirected output.
@@ -496,15 +498,27 @@ namespace MySQL_Backup {
                 try {
                     Directory.CreateDirectory(dbSaveDirectory);
                 }
-                catch (Exception ex) {
-                    rtbOutput.Text = "Could not create directory, aborting backup.";
+                catch (IOException) {
+                    rtbOutput.Text = "Could not create save directory, aborting backup.";
+                    return;
+                }
+            }
+
+            // Check for our temp directory
+            if (!Directory.Exists(@"temp\")) {
+                try {
+                    Directory.CreateDirectory(@"temp\");
+                }
+                catch (IOException) {
+                    rtbOutput.Text = "Could not create temp directory and it does not exist, aborting backup.";
                     return;
                 }
             }
 
             // Create a string array to hold all of our parameters in.
-            string[] parameters = { tbHostName.Text, tbUserName.Text, tbPassword.Text, tbMySQLDumpOptions.Text, dbName, dbSaveDirectory, tbDumpLocation.Text, now.ToString("yyyy_MM_dd_HH_mm_ss_") };
+            string[] parameters = { tbHostName.Text, tbUserName.Text, tbPassword.Text, tbMySQLDumpOptions.Text, dbName, tbDumpLocation.Text, dateStamp };
 
+            rtbOutput.Text = "Command Line Used: " + parameters[5] + " " + String.Format("-h{0} -u{1} -p[password] {2} --databases {3} --result-file={4}", parameters[0], parameters[1], parameters[3], parameters[4], @"temp\" + parameters[6] + parameters[4] + ".sql\n");
             //Create a thread to do the actual backup in.           
             Thread backupThread = new Thread(() => backupDataBase(parameters));
             backupThread.IsBackground = true;
@@ -530,8 +544,8 @@ namespace MySQL_Backup {
                 }
                 return;
             }
-
-            rtbOutput.Text = "Dump of " + dbName + " Complete.\n";
+            
+            rtbOutput.Text = rtbOutput.Text + "Dump of " + dbName + " Complete.\n";
          
             if (cbCompress.Checked) {
                 error = "";
@@ -562,11 +576,33 @@ namespace MySQL_Backup {
             if (cbRemoveDumpFile.Checked) {
                 // Remove the original .sql file and only store the .zip
                 try {
-                    File.Delete(dbSaveDirectory + now.ToString("yyyy_MM_dd_HH_mm_ss_") + dbName + ".sql");
+                    File.Delete(@"temp\" + dateStamp + dbName + ".sql");
                 }
-                catch (IOException) {
+                catch (IOException ex) {
+                    utilityFunctions.displayErrorMessage("Unable to delete the .SQL dump file.", "Error", false);
+                }
+            }
 
+            // Everything appears to be OK so far. We're going to move the file from our temp directory to the save directory.
+            try {
+                // Did we create a .zip file?
+                if (cbCompress.Checked) {
+                    File.Move(@"temp\" + dateStamp + dbName + ".zip", dbSaveDirectory + dateStamp + dbName + ".zip");
                 }
+                // Did we dlete the .sql dump file?
+                if (!cbRemoveDumpFile.Checked) {
+                    File.Move(@"temp\" + dateStamp + dbName + ".sql", dbSaveDirectory + dateStamp + dbName + ".sql");
+                }                
+            }
+            catch (IOException ex) {
+                utilityFunctions.displayErrorMessage(ex.Message, "error", false);
+                rtbOutput.Text = rtbOutput.Text + "Unable to move file(s) to save directory.\n";
+                toolStripProgressBar1.Visible = false;
+                toolStripProgressBar1.Enabled = false;
+                if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
+                    string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
+                }
+                return;
             }
 
             rtbOutput.Text = rtbOutput.Text + "Backup of " + dbName + " Complete.\n";
@@ -590,12 +626,20 @@ namespace MySQL_Backup {
 
         private void backupDataBase(string[] parameters) {
             
+            // Parameters
+            // 0 = MySQL Host
+            // 1 = MySQL User
+            // 2 = MySQL Password
+            // 3 = MySQL Dump options
+            // 4 = Database Name
+            // 5 = mysqldump.exe location
+            // 6 = filename prepend
             error = "";                                   
             //create start info...
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = parameters[6];
+            startInfo.FileName = parameters[5];
             //put it all together, notice that were using the --result-file command line. This allows us to not have to use a streamwriter with redirected output.
-            startInfo.Arguments = String.Format("-h{0} -u{1} -p{2} {3} --databases {4} --result-file={5}", parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5] + parameters[7] + parameters[4] + ".sql");
+            startInfo.Arguments = String.Format("-h{0} -u{1} -p{2} {3} --databases {4} --result-file={5}", parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], @"temp\" + parameters[6] + parameters[4] + ".sql");
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardInput = false;
             startInfo.RedirectStandardOutput = false; //we do not need to redirect the standard output to a StreamWriter
@@ -606,7 +650,13 @@ namespace MySQL_Backup {
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             proc.StartInfo = startInfo;
             //start the process...
-            proc.Start();
+            try {
+                proc.Start();
+            }
+            catch (Exception ex) {
+                utilityFunctions.displayErrorMessage(ex.Message, "Error", false);
+                return;
+            }            
             error = proc.StandardError.ReadToEnd();
             //wait for the process to finish...
             proc.WaitForExit();
@@ -615,7 +665,7 @@ namespace MySQL_Backup {
             if (error != "") {
                 // Cleanup the empty file 
                 try {
-                    File.Delete(parameters[5] + parameters[7] + parameters[4] + ".sql");
+                    File.Delete(@"temp\" + parameters[6] + parameters[4] + ".sql");
                 }
                 catch (IOException ex) {
                     error = ex.Message;
@@ -633,10 +683,18 @@ namespace MySQL_Backup {
         ///////////////////////////////////////////////////////////////////////////////////////
 
         private void zipDataBase(string[] parameters) {
+            // Parameters
+            // 0 = MySQL Host
+            // 1 = MySQL User
+            // 2 = MySQL Password
+            // 3 = MySQL Dump options
+            // 4 = Database Name
+            // 5 = mysqldump.exe location
+            // 6 = filename prepend
             try {
                 // Now were going to zip the file up.            
-                ZipArchive zip = ZipFile.Open(parameters[5] + parameters[7] + parameters[4] + ".zip", ZipArchiveMode.Create);
-                zip.CreateEntryFromFile(parameters[5] + parameters[7] + parameters[4] + ".sql", parameters[7] + parameters[4] + ".sql");
+                ZipArchive zip = ZipFile.Open(@"temp\" + parameters[6] + parameters[4] + ".zip", ZipArchiveMode.Create);
+                zip.CreateEntryFromFile(@"temp\" + parameters[6] + parameters[4] + ".sql", parameters[6] + parameters[4] + ".sql");
                 zip.Dispose();
             }
             catch (IOException ex) {
@@ -654,7 +712,7 @@ namespace MySQL_Backup {
 
         private void cbRemoveDumpFile_CheckedChanged(object sender, EventArgs e) {
             if (cbRemoveDumpFile.Checked && !cbCompress.Checked) {
-                if (utilityFunctions.displayErrorMessage("Checking this and not checking the Compress Backup box will result in your backup file being deleted!\nThis is designed to let you keep both the original dump file and the .zip file.", "File Deletion Warning") == false){
+                if (utilityFunctions.displayErrorMessage("Checking this and not checking the Compress Backup box will result in your backup file being deleted!\nThis is designed to let you keep both the original dump file and the .zip file.", "File Deletion Warning",true) == false){
                     cbRemoveDumpFile.Checked = false;
                 }
             }
