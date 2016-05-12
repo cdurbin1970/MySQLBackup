@@ -16,11 +16,10 @@ using MySql.Data.MySqlClient;
 using MySql.Data.Common;
 using iniReader;
 using Encryption_Lib;
+using AMS.Profile;
 
 /*
  ITEMS Completed
- 
-
  
  */
 
@@ -37,11 +36,13 @@ namespace MySQL_Backup {
         string error = "";
         int processID = 0;
         bool processTerminated = false;
-             
+        // The current config version
+        string config_version = "1.0";
+
         public frMain() {
+            
             InitializeComponent();
-            // Update our text controls on the form.
-                    
+            // Update our text controls on the form.                   
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +83,8 @@ namespace MySQL_Backup {
             toolTip1.SetToolTip(this.tbSMTPPort, @"Port for the SMTP server (Default is 25).");
             toolTip1.SetToolTip(this.tbEmailAddress, @"Email address to send reports to.");
             toolTip1.SetToolTip(this.tbFromAddress, @"The from email address.");
-                        
+            toolTip1.SetToolTip(this.buTestConfig, @"The test will use the first checked database in the list.");
+            
             // Create our fileinfo object
             var objFileInfo = new FileInfo(Application.ExecutablePath);
             // To get the lastwrite time of this file
@@ -198,8 +200,9 @@ namespace MySQL_Backup {
                 fileNameToSave = tsslCurrentConfig.Text;
             }            
             if(sender == saveAsToolStripMenuItem) {
+                saveFileDialog1.Filter = "XML Config (.xml)|*.xml";
                 saveFileDialog1.InitialDirectory = @Directory.GetCurrentDirectory() + @"\configs";
-                saveFileDialog1.FileName = tbHostName.Text + ".conf";            
+                saveFileDialog1.FileName = tbHostName.Text + ".xml";            
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK) {
                     fileNameToSave = saveFileDialog1.FileName;
                 }
@@ -208,22 +211,17 @@ namespace MySQL_Backup {
                 }
             }  
             // iterate through all the databases listed and decide which list to put them on.
-            string checkedDatabases = "";
-            string uncheckedDatabases = "";
+            List<string> checkedDatabases = new List<string>();
+            List<string> uncheckedDatabases = new List<string>();
             for (int x = 0; x < clbDatabases.Items.Count; x++) {
                 if (clbDatabases.GetItemChecked(x)) {
-                    checkedDatabases = checkedDatabases + (string)clbDatabases.Items[x];
-                    if (x != clbDatabases.Items.Count) {
-                        checkedDatabases = checkedDatabases + ",";
-                    }
+                    checkedDatabases.Add((string)clbDatabases.Items[x]);                    
                 }
                 else {
-                    uncheckedDatabases = uncheckedDatabases + (string)clbDatabases.Items[x];
-                    if (x != clbDatabases.Items.Count) {
-                        uncheckedDatabases = uncheckedDatabases + ",";
-                    }
+                    uncheckedDatabases.Add((string)clbDatabases.Items[x]);
                 }
             }
+            // encrypt the sql and smtp passwords
             string SQLPassword = "";
             if (tbPassword.Text != "") {
                 SQLPassword = Convert.ToBase64String(AESGCM.SimpleEncrypt(Encoding.UTF8.GetBytes(tbPassword.Text), Encoding.UTF8.GetBytes(encryptionKey)));
@@ -237,16 +235,34 @@ namespace MySQL_Backup {
             }
             else {
                 SMTPPassword = "";
-            }       
-            
-            string[] lines = { "[General]", "Server = " + tbHostName.Text, "Port = " + tbPort.Text, "Username = " + tbUserName.Text, "SQLPassword = " + SQLPassword, "MySQLDump = " + tbDumpLocation.Text,"MySQLDumpOptions = " + tbMySQLDumpOptions.Text, "SaveLocation = " + tbSaveLocation.Text 
-                                ,"DaysToKeep = " + tbDaystoKeep.Text, "CompressBackup = " + cbCompress.CheckState,"RemoveDumpFile = " + cbRemoveDumpFile.CheckState,"DBDirs = " + cbDBDirs.CheckState,"SendEMail = " + cbSendEmail.CheckState, "SMTPServer = " + tbSMTPServer.Text, "SMTPPort = " + tbSMTPPort.Text, "SMTPUsername = " + tbSMTPUserName.Text, "SMTPPassword = " + SMTPPassword, "EmailAddress = " + tbEmailAddress.Text,"FromAddress = " + tbFromAddress.Text, "[Databases]", "CheckedDatabases = " + checkedDatabases.TrimEnd(','), "unCheckedDatabases = " + uncheckedDatabases.TrimEnd(',')};
-            // Write all the lines out, then close the file.
+            }
+            // Open our .xml file and save the entries to it.
             try {
-                File.WriteAllLines(fileNameToSave, lines);
+                Xml profile = new Xml(fileNameToSave);
+                profile.SetValue("General", "Config Version", "1.0");
+                profile.SetValue("General", "Server", tbHostName.Text);
+                profile.SetValue("General", "Port", tbPort.Text);
+                profile.SetValue("General", "Username", tbUserName.Text);
+                profile.SetValue("General", "SQLPassword", SQLPassword);
+                profile.SetValue("General", "MySQLDump", tbDumpLocation.Text);
+                profile.SetValue("General", "MySQLDumpOptions", tbMySQLDumpOptions.Text);
+                profile.SetValue("General", "SaveLocation", tbSaveLocation.Text);
+                profile.SetValue("General", "DaysToKeep",tbDaystoKeep.Text);
+                profile.SetValue("General", "CompressBackup",cbCompress.CheckState);
+                profile.SetValue("General", "RemoveDumpFile",cbRemoveDumpFile.CheckState);
+                profile.SetValue("General", "DBDirs",cbDBDirs.CheckState);
+                profile.SetValue("General", "SendEMail",cbSendEmail.CheckState);
+                profile.SetValue("General", "SMTPServer",tbSMTPServer.Text);
+                profile.SetValue("General", "SMTPPort",tbSMTPPort.Text);
+                profile.SetValue("General", "SMTPUsername",tbSMTPUserName.Text);
+                profile.SetValue("General", "SMTPPassword", SMTPPassword);
+                profile.SetValue("General", "EmailAddress",tbEmailAddress.Text);
+                profile.SetValue("General", "FromAddress",tbFromAddress.Text);
+                profile.SetValue("Databases", "CheckedDatabases", string.Join(",",checkedDatabases));
+                profile.SetValue("Databases", "unCheckedDatabases", string.Join(",",uncheckedDatabases));
                 tsslCurrentConfig.Text = fileNameToSave;
                 saveToolStripMenuItem.Enabled = true;
-                utilityFunctions.displayInformationMessage("Config file saved successfully.", "Config Saved",false);
+                utilityFunctions.displayInformationMessage("Config file saved successfully.", "Config Saved", false);
             }
             catch {
                 utilityFunctions.displayErrorMessage("Error saving config file.", "Error Saving Config",false);
@@ -260,85 +276,102 @@ namespace MySQL_Backup {
         ///////////////////////////////////////////////////////////////////////////////////////
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
-            openFileDialog1.Filter = "Config Files (*.conf)|*.conf";
+            openFileDialog1.Filter = "Config Files (*.xml)|*.xml";
             openFileDialog1.InitialDirectory = @Directory.GetCurrentDirectory() + @"\configs";
             if (openFileDialog1.ShowDialog() == DialogResult.OK) {                
                 //clear everything out to make sure we're putting in correct items.                
                 clearConfigItems(clearAllItemsToolStripMenuItem, e);
                 //Load our config file in and assign the correct places.                
-                Configuration objinifile = utilityFunctions.ConfigOpen(openFileDialog1.FileName);
-                if (objinifile != null) {
-                    tbHostName.Text = objinifile.GetValue("General", "Server");
-                    tbUserName.Text = objinifile.GetValue("General", "Username");
-                    if (objinifile.GetValue("General", "SQLPassword").ToString() != "") {
-                        tbPassword.Text = AESGCM.SimpleDecrypt(objinifile.GetValue("General", "SQLPassword").ToString(), Encoding.UTF8.GetBytes(encryptionKey));
+                Xml profile = new Xml(openFileDialog1.FileName);
+                // Check to make sure we're using the correct version of the config file.
+                try {
+                    if (profile.GetValue("General", "Config Version").ToString() != config_version) {
+                        utilityFunctions.displayErrorMessage("This config file appears to be for a different version of MySQL Backup.", "Config Error", false);
+                        return;
+                    }
+                }
+                catch (Exception) {
+                    utilityFunctions.displayErrorMessage("This appears to be an invalid config file.", "Config Error", false);
+                    return;
+                }
+                // Load our values, fail if something is missing.
+                try {
+                    tbHostName.Text = profile.GetValue("General", "Server").ToString();
+                    tbPort.Text = profile.GetValue("General", "Port").ToString();
+                    tbUserName.Text = profile.GetValue("General", "Username").ToString();
+                    if (profile.GetValue("General", "SQLPassword").ToString() != "") {
+                        tbPassword.Text = AESGCM.SimpleDecrypt(profile.GetValue("General", "SQLPassword").ToString(), Encoding.UTF8.GetBytes(encryptionKey));
                     }
                     else {
                         tbPassword.Text = "";
-                    }                    
-                    tbPort.Text = objinifile.GetValue("General", "Port");
-                    tbDumpLocation.Text = objinifile.GetValue("General", "MySQLDump");
-                    tbMySQLDumpOptions.Text = objinifile.GetValue("General", "MySQLDumpOptions");
-                    tbSaveLocation.Text = objinifile.GetValue("General", "SaveLocation");
-                    tbDaystoKeep.Text = objinifile.GetValue("General", "DaysToKeep");
-                    if (objinifile.GetValue("General", "CompressBackup") == "Checked") {
+                    }
+                    tbDumpLocation.Text = profile.GetValue("General", "MySQLDump").ToString();
+                    tbMySQLDumpOptions.Text = profile.GetValue("General", "MySQLDumpOptions").ToString();
+                    tbSaveLocation.Text = profile.GetValue("General", "SaveLocation").ToString();
+                    tbDaystoKeep.Text = profile.GetValue("General", "DaysToKeep").ToString();
+                    if (profile.GetValue("General", "CompressBackup").ToString() == "Checked") {
                         cbCompress.Checked = true;
                     }
                     else {
                         cbCompress.Checked = false;
                     }
-                    if (objinifile.GetValue("General", "RemoveDumpFile") == "Checked") {
+                    if (profile.GetValue("General", "RemoveDumpFile").ToString() == "Checked") {
                         cbRemoveDumpFile.Checked = true;
                     }
                     else {
                         cbRemoveDumpFile.Checked = false;
                     }
-                    if (objinifile.GetValue("General", "DBDirs") == "Checked") {
-                        
+                    if (profile.GetValue("General", "DBDirs").ToString() == "Checked") {
+
                         cbDBDirs.Checked = true;
                     }
                     else {
                         cbDBDirs.Checked = false;
                     }
-                    if (objinifile.GetValue("General", "SendEMail") == "Checked") {
+                    if (profile.GetValue("General", "SendEMail").ToString() == "Checked") {
 
-                       cbSendEmail.Checked = true;
+                        cbSendEmail.Checked = true;
                     }
                     else {
                         cbSendEmail.Checked = false;
                     }
 
-                    tbSMTPServer.Text = objinifile.GetValue("General", "SMTPServer");
-                    tbSMTPPort.Text = objinifile.GetValue("General", "SMTPPort");
-                    tbSMTPUserName.Text = objinifile.GetValue("General", "SMTPUsername");
-                    if (objinifile.GetValue("General", "SMTPPassword").ToString() != "") {
-                        tbSMTPPassword.Text = AESGCM.SimpleDecrypt(objinifile.GetValue("General", "SMTPPassword").ToString(), Encoding.UTF8.GetBytes(encryptionKey));
+                    tbSMTPServer.Text = profile.GetValue("General", "SMTPServer").ToString();
+                    tbSMTPPort.Text = profile.GetValue("General", "SMTPPort").ToString();
+                    tbSMTPUserName.Text = profile.GetValue("General", "SMTPUsername").ToString();
+                    if (profile.GetValue("General", "SMTPPassword").ToString() != "") {
+                        tbSMTPPassword.Text = AESGCM.SimpleDecrypt(profile.GetValue("General", "SMTPPassword").ToString(), Encoding.UTF8.GetBytes(encryptionKey));
                     }
                     else {
                         tbSMTPPassword.Text = "";
                     }
-                    tbEmailAddress.Text = objinifile.GetValue("General", "EmailAddress");
-                    tbFromAddress.Text = objinifile.GetValue("General", "FromAddress");
+                    tbEmailAddress.Text = profile.GetValue("General", "EmailAddress").ToString();
+                    tbFromAddress.Text = profile.GetValue("General", "FromAddress").ToString();
 
-                    if (objinifile.GetValue("Databases", "CheckedDatabases").ToString() != "") {
+                    if (profile.GetValue("Databases", "CheckedDatabases").ToString() != "") {
                         // get the list of checked DBs
-                        string[] checkedDBList = objinifile.GetValue("Databases", "CheckedDatabases").ToString().Split(',');
+                        string[] checkedDBList = profile.GetValue("Databases", "CheckedDatabases").ToString().Split(',');
                         // iterate through each one and add it to the list checked.
                         for (int x = 0; x < checkedDBList.Length; x++) {
                             clbDatabases.Items.Add(checkedDBList[x], true);
                         }
                     }
-                    if (objinifile.GetValue("Databases", "unCheckedDatabases").ToString() != "") {
+                    if (profile.GetValue("Databases", "unCheckedDatabases").ToString() != "") {
                         // get the list of unchecked DBs
-                        string[] unCheckedDBList = objinifile.GetValue("Databases", "unCheckedDatabases").ToString().Split(',');
+                        string[] unCheckedDBList = profile.GetValue("Databases", "unCheckedDatabases").ToString().Split(',');
                         // iterate through each one and add it to the list unchecked.
                         for (int x = 0; x < unCheckedDBList.Length; x++) {
                             clbDatabases.Items.Add(unCheckedDBList[x], false);
                         }
                     }
-                    saveToolStripMenuItem.Enabled = true;
-                    tsslCurrentConfig.Text = openFileDialog1.FileName;
                 }
+                catch (Exception) {
+                    utilityFunctions.displayErrorMessage("There was a problem parsing the config file.\n Not all entries were found and it is doubtful it will work properly.", "Config Error", false);
+                    return;
+
+                }
+                saveToolStripMenuItem.Enabled = true;
+                tsslCurrentConfig.Text = openFileDialog1.FileName;
             }
         }
 
@@ -392,8 +425,7 @@ namespace MySQL_Backup {
         //                                                                                   //
         ///////////////////////////////////////////////////////////////////////////////////////
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e) {
-
+        private void cbSelectDatabases_CheckedChanged(object sender, EventArgs e) {
             if (cbSelectDatabases.CheckState == CheckState.Checked) {
                 for (int x = 0; x < clbDatabases.Items.Count; x++) {
                     clbDatabases.SetItemChecked(x, true);
@@ -500,7 +532,6 @@ namespace MySQL_Backup {
   
             rtbOutput.Text = "";
 
-            buCancelTest.Visible = true;
             //Get the first database name from the list that has been checked. We'll use that.
             for (int x = 0; x < clbDatabases.Items.Count; x++) {
                 if (clbDatabases.GetItemChecked(x)) {
@@ -545,23 +576,27 @@ namespace MySQL_Backup {
                     return;
                 }
             }
+            // Make the cancel button visible
+            buCancelTest.Visible = true;
 
             // Create a string array to hold all of our parameters in.
             string[] parameters = { tbHostName.Text, tbUserName.Text, tbPassword.Text, tbMySQLDumpOptions.Text, dbName, tbDumpLocation.Text, dateStamp };
 
             rtbOutput.Text = "Command Line Used: " + parameters[5] + " " + String.Format("-h{0} -u{1} -p[password] {2} --databases {3} --result-file={4}", parameters[0], parameters[1], parameters[3], parameters[4], @"temp\" + parameters[6] + parameters[4] + ".sql\n");
-            //Create a thread to do the actual backup in.           
-            Thread backupThread = new Thread(() => backupDataBase(parameters));
-            backupThread.IsBackground = true;
-            backupThread.Name = "backupThread";
-            backupThread.Start();
-
+                
+            //Create a background worker to do the actual backup in.           
+            BackgroundWorker backupThread = new BackgroundWorker();
+            backupThread.WorkerReportsProgress = false;
+            backupThread.WorkerSupportsCancellation = false;
+            backupThread.DoWork += backupDataBase;
+            backupThread.RunWorkerAsync(parameters);
+            
             // Start the control to show it is doing something
             toolStripProgressBar1.Visible = true;
             toolStripProgressBar1.Enabled = true;
             
             // Wait while the thread completes, doevents so the form is not frozen.
-            while (backupThread.IsAlive) {
+            while (backupThread.IsBusy) {
                 Application.DoEvents();
             }
 
@@ -573,21 +608,25 @@ namespace MySQL_Backup {
                 if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
                     string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
                 }
+                // Make the cancel button invisible
+                buCancelTest.Visible = false;
                 return;
             }
-            
+
+            // Make the cancel button invisible
+            buCancelTest.Visible = false;
             rtbOutput.Text = rtbOutput.Text + "Dump of " + dbName + " Complete.\n";
          
             if (cbCompress.Checked) {
-                error = "";
-                //Create a thread to do the actual backup in.           
-                Thread zipThread = new Thread(() => zipDataBase(parameters));
-                zipThread.IsBackground = true;
-                zipThread.Name = "zipThread";
-                zipThread.Start();
+                // create a background worker to do the zip.
+                BackgroundWorker zipThread = new BackgroundWorker();
+                zipThread.WorkerReportsProgress = false;
+                zipThread.WorkerSupportsCancellation = false;
+                zipThread.DoWork += zipDataBase;
+                zipThread.RunWorkerAsync(parameters);
 
                 // Wait while the thread completes, doevents so the form is not frozen.
-                while (zipThread.IsAlive) {
+                while (zipThread.IsBusy) {
                     Application.DoEvents();
                 }
                 if (error == "OK") {
@@ -599,9 +638,9 @@ namespace MySQL_Backup {
                     toolStripProgressBar1.Enabled = false;
                     if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
                         string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
-                    }
+                    }                   
                     return;
-                }                
+                }              
             }
 
             if (cbRemoveDumpFile.Checked) {
@@ -632,17 +671,17 @@ namespace MySQL_Backup {
                 toolStripProgressBar1.Enabled = false;
                 if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
                     string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
-                }
+                }                
                 return;
             }
 
-            rtbOutput.Text = rtbOutput.Text + "Backup of " + dbName + " Complete.\n";
-            rtbOutput.Text = rtbOutput.Text + "Backup saved to " + dbSaveDirectory + "\n";
+            rtbOutput.Text = rtbOutput.Text + "Backup of: " + dbName + " Complete.\n";
+            rtbOutput.Text = rtbOutput.Text + "Backup saved to: " + dbSaveDirectory + "\n";
             
             rtbOutput.Text = rtbOutput.Text + "Total Backup Time: " + DateTime.Now.Subtract(now).TotalSeconds.ToString("########") + " Seconds.\n";
             
             toolStripProgressBar1.Visible = false;
-            toolStripProgressBar1.Enabled = false;
+            toolStripProgressBar1.Enabled = false;            
 
             if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
                 string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup complete for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
@@ -655,7 +694,7 @@ namespace MySQL_Backup {
         //                                                                                   //
         ///////////////////////////////////////////////////////////////////////////////////////
 
-        private void backupDataBase(string[] parameters) {
+        private void backupDataBase(object sender, DoWorkEventArgs e) {
             
             // Parameters
             // 0 = MySQL Host
@@ -665,12 +704,13 @@ namespace MySQL_Backup {
             // 4 = Database Name
             // 5 = mysqldump.exe location
             // 6 = filename prepend
+            Object[] arg = e.Argument as Object[];
             error = "";                                   
             //create start info...
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.FileName = parameters[5];
+            startInfo.FileName = (string)arg[5];
             //put it all together, notice that were using the --result-file command line. This allows us to not have to use a streamwriter with redirected output.
-            startInfo.Arguments = String.Format("-h{0} -u{1} -p{2} {3} --databases {4} --result-file={5}", parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], @"temp\" + parameters[6] + parameters[4] + ".sql");
+            startInfo.Arguments = String.Format("-h{0} -u{1} -p{2} {3} --databases {4} --result-file={5}", (string)arg[0], (string)arg[1], (string)arg[2], (string)arg[3], (string)arg[4], @"temp\" + (string)arg[6] + (string)arg[4] + ".sql");
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardInput = false;
             startInfo.RedirectStandardOutput = false; //we do not need to redirect the standard output to a StreamWriter
@@ -700,15 +740,18 @@ namespace MySQL_Backup {
             if (error != "")  {
                 // Cleanup the empty file 
                 try {
-                    File.Delete(@"temp\" + parameters[6] + parameters[4] + ".sql");
+                    File.Delete(@"temp\" + (string)arg[6] + (string)arg[4] + ".sql");
                 }
                 catch (IOException ex) {
                     error = ex.Message;
-                }
-                return; 
+                }                
+                e.Cancel = true;
+                return;
             }
             //MySQLDump.
-            error =  "OK";            
+            error =  "OK";
+            e.Cancel = true;
+            return;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -717,7 +760,7 @@ namespace MySQL_Backup {
         //                                                                                   //
         ///////////////////////////////////////////////////////////////////////////////////////
 
-        private void zipDataBase(string[] parameters) {
+        private void zipDataBase(object sender, DoWorkEventArgs e){
             // Parameters
             // 0 = MySQL Host
             // 1 = MySQL User
@@ -726,17 +769,23 @@ namespace MySQL_Backup {
             // 4 = Database Name
             // 5 = mysqldump.exe location
             // 6 = filename prepend
+            error = "";
+            Object[] arg = e.Argument as Object[];
+                       
             try {
                 // Now were going to zip the file up.            
-                ZipArchive zip = ZipFile.Open(@"temp\" + parameters[6] + parameters[4] + ".zip", ZipArchiveMode.Create);
-                zip.CreateEntryFromFile(@"temp\" + parameters[6] + parameters[4] + ".sql", parameters[6] + parameters[4] + ".sql");
+                ZipArchive zip = ZipFile.Open(@"temp\" + (string)arg[6] +  (string)arg[4] + ".zip", ZipArchiveMode.Create);
+                zip.CreateEntryFromFile(@"temp\" + (string)arg[6] + (string)arg[4] + ".sql", (string)arg[6] + (string)arg[4] + ".sql");
                 zip.Dispose();
             }
             catch (IOException ex) {
-                error = "Zip process failed: " + ex.Message + "\n"; ;
+                error = "Zip process failed: " + ex.Message + "\n";                
+                e.Cancel = true;
                 return;
             }
             error = "OK";
+            e.Cancel = true;
+            return;
         }
         
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -796,9 +845,34 @@ namespace MySQL_Backup {
                 processTerminated = true;                
             }             
         }
-        
- 
 
+        private void startSchedulerToolStripMenuItem_Click(object sender, EventArgs e) {
+            
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //                                                                                   //
+        //    Edit the backup schedules                                                      //
+        //                                                                                   //
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        private void editScheduleToolStripMenuItem_Click(object sender, EventArgs e) {
+            ScheduleGUI scheduleForm = new ScheduleGUI();
+            scheduleForm.ShowDialog();
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //                                                                                   //
+        //   Show the about dialog                                                           //
+        //                                                                                   //
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
+            frAbout about = new frAbout();
+            about.ShowDialog();
+        }
+
+        
 
 
 
