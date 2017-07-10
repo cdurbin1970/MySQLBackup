@@ -1,26 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
 using MySql.Data.MySqlClient;
-using MySql.Data.Common;
-using iniReader;
 using Encryption_Lib;
 using AMS.Profile;
 
 /*
  ITEMS Completed
- 
+ * Code cleanup. 
+ * Added a try catch block for the show databases command under the buTestConnection_Click function.
  */
 
 namespace MySQL_Backup {
@@ -41,8 +35,9 @@ namespace MySQL_Backup {
 
         public frMain() {
             
-            InitializeComponent();
-            // Update our text controls on the form.                   
+            InitializeComponent();            
+            // Update our text controls on the form.
+            utilityFunctions.textupdate(this);       
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////
@@ -118,6 +113,7 @@ namespace MySQL_Backup {
             tbPassword.BackColor = Color.White;
             tbPort.BackColor = Color.White;
 
+
             if (tbHostName.Text != "" && tbUserName.Text != "" && tbPassword.Text != "" && tbPort.Text != "") {
                 // Setup our connection variables
                 MySqlConnection MySQLConnect = utilityFunctions.DBConnect("server=" + tbHostName.Text + ";user id=" + tbUserName.Text + ";port=" + tbPort.Text + ";database=mysql;pooling=false;allow user variables=true;password=" + tbPassword.Text);
@@ -125,12 +121,19 @@ namespace MySQL_Backup {
                     // Create our Lookup SELECT command
                     var lookupSelectCmd = new MySqlCommand();
                     // Create our Lookup command reader
-                    MySqlDataReader readLookupData;
+                    MySqlDataReader readLookupData = null;
                     // Create our select command to get the records
                     lookupSelectCmd.CommandText = "SHOW DATABASES;";
                     // Set the lookup SELECT command connection
                     lookupSelectCmd.Connection = MySQLConnect;
-                    readLookupData = lookupSelectCmd.ExecuteReader();
+                    try {
+                        readLookupData = lookupSelectCmd.ExecuteReader();
+                    }
+                    catch (MySqlException ex) {
+                        utilityFunctions.displayErrorMessage(ex.Message, "Error", false);
+                        utilityFunctions.DBClose(MySQLConnect);
+                        return;
+                    }
                     clbDatabases.Items.Clear();
                     while (readLookupData.Read()) {
                         clbDatabases.Items.Add(readLookupData.GetValue(readLookupData.GetOrdinal("Database")).ToString());
@@ -171,8 +174,7 @@ namespace MySQL_Backup {
 
         private void buDumpLocation_Click(object sender, EventArgs e) {
             openFileDialog1.Filter = "MySQL Dump (.exe)|*.exe";
-            DialogResult result = openFileDialog1.ShowDialog(); // Show the dialog.
-            if (result == DialogResult.OK) {
+            if (openFileDialog1.ShowDialog() == DialogResult.OK) {
                 tbDumpLocation.Text = openFileDialog1.FileName;
             }
         }        
@@ -322,20 +324,17 @@ namespace MySQL_Backup {
                         cbRemoveDumpFile.Checked = false;
                     }
                     if (profile.GetValue("General", "DBDirs").ToString() == "Checked") {
-
                         cbDBDirs.Checked = true;
                     }
                     else {
                         cbDBDirs.Checked = false;
                     }
                     if (profile.GetValue("General", "SendEMail").ToString() == "Checked") {
-
                         cbSendEmail.Checked = true;
                     }
                     else {
                         cbSendEmail.Checked = false;
                     }
-
                     tbSMTPServer.Text = profile.GetValue("General", "SMTPServer").ToString();
                     tbSMTPPort.Text = profile.GetValue("General", "SMTPPort").ToString();
                     tbSMTPUserName.Text = profile.GetValue("General", "SMTPUsername").ToString();
@@ -368,7 +367,6 @@ namespace MySQL_Backup {
                 catch (Exception) {
                     utilityFunctions.displayErrorMessage("There was a problem parsing the config file.\n Not all entries were found and it is doubtful it will work properly.", "Config Error", false);
                     return;
-
                 }
                 saveToolStripMenuItem.Enabled = true;
                 tsslCurrentConfig.Text = openFileDialog1.FileName;
@@ -382,6 +380,7 @@ namespace MySQL_Backup {
         ///////////////////////////////////////////////////////////////////////////////////////
 
         private void clearConfigItems(object sender, EventArgs e) {
+            
             if (sender == newToolStripMenuItem) {
                 saveToolStripMenuItem.Enabled = false;
                 tbHostName.Text = "";
@@ -846,10 +845,6 @@ namespace MySQL_Backup {
             }             
         }
 
-        private void startSchedulerToolStripMenuItem_Click(object sender, EventArgs e) {
-            
-        }
-
         ///////////////////////////////////////////////////////////////////////////////////////
         //                                                                                   //
         //    Edit the backup schedules                                                      //
@@ -872,9 +867,17 @@ namespace MySQL_Backup {
             about.ShowDialog();
         }
 
-        
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //                                                                                   //
+        //    Open dialog to find MySQL exe                                                  //
+        //                                                                                   //
+        ///////////////////////////////////////////////////////////////////////////////////////
 
-
-
+        private void buRestoreMySQLRequestor_Click(object sender, EventArgs e) {
+                openFileDialog1.Filter = "MySQL (.exe)|*.exe";
+                if (openFileDialog1.ShowDialog() == DialogResult.OK) {
+                    tbRestoreMySQLLocation.Text = openFileDialog1.FileName;
+                }
+           }
     }
 }   

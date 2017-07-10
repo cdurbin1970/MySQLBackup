@@ -40,15 +40,19 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.schedulerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.startSchedulerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.editScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.tsslCurrentConfig = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.buCancelTest = new System.Windows.Forms.Button();
             this.rtbOutput = new System.Windows.Forms.RichTextBox();
             this.buTestConfig = new System.Windows.Forms.Button();
@@ -94,22 +98,41 @@
             this.label4 = new System.Windows.Forms.Label();
             this.buTestConnection = new System.Windows.Forms.Button();
             this.tbPort = new System.Windows.Forms.TextBox();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.tsslCurrentConfig = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.buRestoreFileLocationRequestor = new System.Windows.Forms.Button();
+            this.tbRestoreFileLocation = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.tbRestoreHostName = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.buRestoreMySQLRequestor = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
+            this.tbRestoreMySQLLocation = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.tbRestoreUserName = new System.Windows.Forms.TextBox();
+            this.tbRestorePassword = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.tbRestorePort = new System.Windows.Forms.TextBox();
+            this.buRestoreDatabase = new System.Windows.Forms.Button();
+            this.rtbRestoreProgress = new System.Windows.Forms.RichTextBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.tbRestoreCommandLine = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.buCancelRestore = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -121,7 +144,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(843, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(880, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -145,7 +168,7 @@
             this.newToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem.Image")));
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(190, 26);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.clearConfigItems);
             // 
@@ -163,7 +186,7 @@
             this.openToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem.Image")));
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(190, 26);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -173,7 +196,7 @@
             this.saveToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem.Image")));
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(190, 26);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveConfigFile);
             // 
@@ -183,45 +206,31 @@
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(190, 26);
             this.saveAsToolStripMenuItem.Text = "Save As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveConfigFile);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(183, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(187, 6);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("quitToolStripMenuItem.Image")));
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
             this.quitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(190, 26);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
             // schedulerToolStripMenuItem
             // 
             this.schedulerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.startSchedulerToolStripMenuItem,
-            this.toolStripMenuItem2,
             this.editScheduleToolStripMenuItem});
             this.schedulerToolStripMenuItem.Name = "schedulerToolStripMenuItem";
             this.schedulerToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
             this.schedulerToolStripMenuItem.Text = "Scheduler";
-            // 
-            // startSchedulerToolStripMenuItem
-            // 
-            this.startSchedulerToolStripMenuItem.Name = "startSchedulerToolStripMenuItem";
-            this.startSchedulerToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.startSchedulerToolStripMenuItem.Text = "Start Scheduler";
-            this.startSchedulerToolStripMenuItem.Click += new System.EventHandler(this.startSchedulerToolStripMenuItem_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(153, 6);
             // 
             // editScheduleToolStripMenuItem
             // 
@@ -243,56 +252,73 @@
             // helpToolStripMenuItem1
             // 
             this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(107, 22);
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.helpToolStripMenuItem1.Text = "Help";
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(104, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(149, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // tabControl1
+            // statusStrip1
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Location = new System.Drawing.Point(0, 27);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(843, 449);
-            this.tabControl1.TabIndex = 1;
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsslCurrentConfig,
+            this.toolStripProgressBar1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 478);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(880, 26);
+            this.statusStrip1.TabIndex = 2;
+            this.statusStrip1.Text = "statusStrip1";
             // 
-            // tabPage1
+            // tsslCurrentConfig
             // 
-            this.tabPage1.Controls.Add(this.buCancelTest);
-            this.tabPage1.Controls.Add(this.rtbOutput);
-            this.tabPage1.Controls.Add(this.buTestConfig);
-            this.tabPage1.Controls.Add(this.groupBox3);
-            this.tabPage1.Controls.Add(this.groupBox2);
-            this.tabPage1.Controls.Add(this.groupBox1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(835, 423);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Connection";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tsslCurrentConfig.AutoSize = false;
+            this.tsslCurrentConfig.Name = "tsslCurrentConfig";
+            this.tsslCurrentConfig.Size = new System.Drawing.Size(625, 21);
+            this.tsslCurrentConfig.Text = "No Config Selected";
+            this.tsslCurrentConfig.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Enabled = false;
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(200, 20);
+            this.toolStripProgressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.toolStripProgressBar1.Visible = false;
+            // 
+            // errorProvider1
+            // 
+            this.errorProvider1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
+            this.errorProvider1.ContainerControl = this;
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.Filter = "Config Files (*.conf)|*.conf";
+            // 
+            // folderBrowserDialog1
+            // 
+            this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
             // 
             // buCancelTest
             // 
             this.buCancelTest.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buCancelTest.Location = new System.Drawing.Point(717, 387);
+            this.buCancelTest.Location = new System.Drawing.Point(725, 387);
             this.buCancelTest.Name = "buCancelTest";
             this.buCancelTest.Size = new System.Drawing.Size(110, 25);
-            this.buCancelTest.TabIndex = 26;
+            this.buCancelTest.TabIndex = 32;
             this.buCancelTest.Text = "Cancel Test";
             this.buCancelTest.UseVisualStyleBackColor = true;
             this.buCancelTest.Visible = false;
@@ -301,22 +327,22 @@
             // rtbOutput
             // 
             this.rtbOutput.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.rtbOutput.Location = new System.Drawing.Point(417, 290);
+            this.rtbOutput.Location = new System.Drawing.Point(425, 290);
             this.rtbOutput.Name = "rtbOutput";
             this.rtbOutput.ReadOnly = true;
             this.rtbOutput.Size = new System.Drawing.Size(410, 91);
-            this.rtbOutput.TabIndex = 20;
+            this.rtbOutput.TabIndex = 30;
             this.rtbOutput.TabStop = false;
             this.rtbOutput.Text = "";
             // 
             // buTestConfig
             // 
             this.buTestConfig.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buTestConfig.Location = new System.Drawing.Point(563, 387);
-            this.buTestConfig.Margin = new System.Windows.Forms.Padding(2);
+            this.buTestConfig.Location = new System.Drawing.Point(571, 387);
+            this.buTestConfig.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buTestConfig.Name = "buTestConfig";
             this.buTestConfig.Size = new System.Drawing.Size(124, 25);
-            this.buTestConfig.TabIndex = 25;
+            this.buTestConfig.TabIndex = 31;
             this.buTestConfig.Text = "Test Configuration";
             this.buTestConfig.UseVisualStyleBackColor = true;
             this.buTestConfig.Click += new System.EventHandler(this.buTestConfig_Click);
@@ -325,12 +351,12 @@
             // 
             this.groupBox3.Controls.Add(this.tbMySQLDumpOptions);
             this.groupBox3.Controls.Add(this.label14);
-            this.groupBox3.Location = new System.Drawing.Point(417, 212);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Location = new System.Drawing.Point(425, 212);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox3.Size = new System.Drawing.Size(412, 73);
-            this.groupBox3.TabIndex = 18;
+            this.groupBox3.TabIndex = 29;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "MySQL Dump Options";
             // 
@@ -338,7 +364,7 @@
             // 
             this.tbMySQLDumpOptions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tbMySQLDumpOptions.Location = new System.Drawing.Point(11, 35);
-            this.tbMySQLDumpOptions.Margin = new System.Windows.Forms.Padding(2);
+            this.tbMySQLDumpOptions.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tbMySQLDumpOptions.Name = "tbMySQLDumpOptions";
             this.tbMySQLDumpOptions.Size = new System.Drawing.Size(396, 20);
             this.tbMySQLDumpOptions.TabIndex = 24;
@@ -369,10 +395,10 @@
             this.groupBox2.Controls.Add(this.tbSMTPPassword);
             this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.tbSMTPPort);
-            this.groupBox2.Location = new System.Drawing.Point(417, 6);
+            this.groupBox2.Location = new System.Drawing.Point(425, 6);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(412, 201);
-            this.groupBox2.TabIndex = 17;
+            this.groupBox2.TabIndex = 28;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "E-Mail Server Information";
             // 
@@ -427,7 +453,6 @@
             this.tbEmailAddress.Size = new System.Drawing.Size(177, 20);
             this.tbEmailAddress.TabIndex = 21;
             this.tbEmailAddress.Text = "cdurbin@cdcomputersys.com";
-            this.tbEmailAddress.Validating += new System.ComponentModel.CancelEventHandler(this.tbEmailAddress_Validating);
             // 
             // label12
             // 
@@ -540,10 +565,10 @@
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.buTestConnection);
             this.groupBox1.Controls.Add(this.tbPort);
-            this.groupBox1.Location = new System.Drawing.Point(8, 6);
+            this.groupBox1.Location = new System.Drawing.Point(16, 6);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(403, 411);
-            this.groupBox1.TabIndex = 16;
+            this.groupBox1.TabIndex = 27;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "MySQL Server Information";
             // 
@@ -682,7 +707,7 @@
             this.tbDumpLocation.Name = "tbDumpLocation";
             this.tbDumpLocation.Size = new System.Drawing.Size(232, 20);
             this.tbDumpLocation.TabIndex = 8;
-            this.tbDumpLocation.Text = "mysqldump.exe";
+            this.tbDumpLocation.Text = "mysqldump*";
             // 
             // label3
             // 
@@ -716,7 +741,7 @@
             this.clbDatabases.FormattingEnabled = true;
             this.clbDatabases.Location = new System.Drawing.Point(77, 146);
             this.clbDatabases.Name = "clbDatabases";
-            this.clbDatabases.Size = new System.Drawing.Size(178, 109);
+            this.clbDatabases.Size = new System.Drawing.Size(178, 94);
             this.clbDatabases.Sorted = true;
             this.clbDatabases.TabIndex = 6;
             // 
@@ -768,80 +793,301 @@
             this.tbPort.TabIndex = 2;
             this.tbPort.Text = "3306";
             // 
-            // statusStrip1
+            // tabControl1
             // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsslCurrentConfig,
-            this.toolStripProgressBar1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 495);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(843, 22);
-            this.statusStrip1.TabIndex = 2;
-            this.statusStrip1.Text = "statusStrip1";
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(12, 28);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(857, 447);
+            this.tabControl1.TabIndex = 33;
             // 
-            // tsslCurrentConfig
+            // tabPage1
             // 
-            this.tsslCurrentConfig.AutoSize = false;
-            this.tsslCurrentConfig.Name = "tsslCurrentConfig";
-            this.tsslCurrentConfig.Size = new System.Drawing.Size(625, 17);
-            this.tsslCurrentConfig.Text = "No Config Selected";
-            this.tsslCurrentConfig.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.tabPage1.Controls.Add(this.groupBox1);
+            this.tabPage1.Controls.Add(this.buCancelTest);
+            this.tabPage1.Controls.Add(this.groupBox2);
+            this.tabPage1.Controls.Add(this.rtbOutput);
+            this.tabPage1.Controls.Add(this.groupBox3);
+            this.tabPage1.Controls.Add(this.buTestConfig);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(849, 421);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Backup";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // toolStripProgressBar1
+            // tabPage2
             // 
-            this.toolStripProgressBar1.Enabled = false;
-            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(200, 16);
-            this.toolStripProgressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
-            this.toolStripProgressBar1.Visible = false;
+            this.tabPage2.Controls.Add(this.groupBox4);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(849, 421);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Restore";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // errorProvider1
+            // groupBox4
             // 
-            this.errorProvider1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
-            this.errorProvider1.ContainerControl = this;
+            this.groupBox4.Controls.Add(this.buCancelRestore);
+            this.groupBox4.Controls.Add(this.rtbRestoreProgress);
+            this.groupBox4.Controls.Add(this.buRestoreDatabase);
+            this.groupBox4.Controls.Add(this.buRestoreFileLocationRequestor);
+            this.groupBox4.Controls.Add(this.groupBox5);
+            this.groupBox4.Controls.Add(this.tbRestoreFileLocation);
+            this.groupBox4.Controls.Add(this.label17);
+            this.groupBox4.Controls.Add(this.tbRestoreHostName);
+            this.groupBox4.Controls.Add(this.label18);
+            this.groupBox4.Controls.Add(this.buRestoreMySQLRequestor);
+            this.groupBox4.Controls.Add(this.label19);
+            this.groupBox4.Controls.Add(this.tbRestoreMySQLLocation);
+            this.groupBox4.Controls.Add(this.label20);
+            this.groupBox4.Controls.Add(this.label21);
+            this.groupBox4.Controls.Add(this.tbRestoreUserName);
+            this.groupBox4.Controls.Add(this.tbRestorePassword);
+            this.groupBox4.Controls.Add(this.label23);
+            this.groupBox4.Controls.Add(this.tbRestorePort);
+            this.groupBox4.Location = new System.Drawing.Point(6, 6);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(431, 411);
+            this.groupBox4.TabIndex = 28;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "MySQL Server Information";
             // 
-            // saveFileDialog1
+            // buRestoreFileLocationRequestor
             // 
-            this.saveFileDialog1.Filter = "Config Files (*.conf)|*.conf";
+            this.buRestoreFileLocationRequestor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buRestoreFileLocationRequestor.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buRestoreFileLocationRequestor.Location = new System.Drawing.Point(365, 157);
+            this.buRestoreFileLocationRequestor.Name = "buRestoreFileLocationRequestor";
+            this.buRestoreFileLocationRequestor.Size = new System.Drawing.Size(26, 20);
+            this.buRestoreFileLocationRequestor.TabIndex = 11;
+            this.buRestoreFileLocationRequestor.Text = "...";
+            this.buRestoreFileLocationRequestor.UseVisualStyleBackColor = true;
             // 
-            // folderBrowserDialog1
+            // tbRestoreFileLocation
             // 
-            this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
+            this.tbRestoreFileLocation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbRestoreFileLocation.Location = new System.Drawing.Point(127, 157);
+            this.tbRestoreFileLocation.Name = "tbRestoreFileLocation";
+            this.tbRestoreFileLocation.Size = new System.Drawing.Size(232, 20);
+            this.tbRestoreFileLocation.TabIndex = 10;
+            this.tbRestoreFileLocation.Text = "backups\\";
             // 
-            // timer1
+            // label17
             // 
-            this.timer1.Enabled = true;
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(11, 159);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(110, 13);
+            this.label17.TabIndex = 16;
+            this.label17.Text = "Backup File Location:";
+            // 
+            // tbRestoreHostName
+            // 
+            this.tbRestoreHostName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbRestoreHostName.Location = new System.Drawing.Point(77, 37);
+            this.tbRestoreHostName.Name = "tbRestoreHostName";
+            this.tbRestoreHostName.Size = new System.Drawing.Size(178, 20);
+            this.tbRestoreHostName.TabIndex = 1;
+            this.tbRestoreHostName.Text = "localhost";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(5, 40);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(63, 13);
+            this.label18.TabIndex = 0;
+            this.label18.Text = "Host Name:";
+            // 
+            // buRestoreMySQLRequestor
+            // 
+            this.buRestoreMySQLRequestor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buRestoreMySQLRequestor.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buRestoreMySQLRequestor.Location = new System.Drawing.Point(365, 127);
+            this.buRestoreMySQLRequestor.Name = "buRestoreMySQLRequestor";
+            this.buRestoreMySQLRequestor.Size = new System.Drawing.Size(26, 20);
+            this.buRestoreMySQLRequestor.TabIndex = 9;
+            this.buRestoreMySQLRequestor.Text = "...";
+            this.buRestoreMySQLRequestor.UseVisualStyleBackColor = true;
+            this.buRestoreMySQLRequestor.Click += new System.EventHandler(this.buRestoreMySQLRequestor_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(5, 66);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(63, 13);
+            this.label19.TabIndex = 1;
+            this.label19.Text = "User Name:";
+            // 
+            // tbRestoreMySQLLocation
+            // 
+            this.tbRestoreMySQLLocation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbRestoreMySQLLocation.Location = new System.Drawing.Point(127, 127);
+            this.tbRestoreMySQLLocation.Name = "tbRestoreMySQLLocation";
+            this.tbRestoreMySQLLocation.Size = new System.Drawing.Size(232, 20);
+            this.tbRestoreMySQLLocation.TabIndex = 8;
+            this.tbRestoreMySQLLocation.Text = "mysql.exe";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(12, 93);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(56, 13);
+            this.label20.TabIndex = 2;
+            this.label20.Text = "Password:";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(32, 129);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(89, 13);
+            this.label21.TabIndex = 12;
+            this.label21.Text = "MySQL Location:";
+            // 
+            // tbRestoreUserName
+            // 
+            this.tbRestoreUserName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbRestoreUserName.Location = new System.Drawing.Point(77, 63);
+            this.tbRestoreUserName.Name = "tbRestoreUserName";
+            this.tbRestoreUserName.Size = new System.Drawing.Size(178, 20);
+            this.tbRestoreUserName.TabIndex = 3;
+            this.tbRestoreUserName.Text = "dbuser";
+            // 
+            // tbRestorePassword
+            // 
+            this.tbRestorePassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbRestorePassword.Location = new System.Drawing.Point(77, 90);
+            this.tbRestorePassword.Name = "tbRestorePassword";
+            this.tbRestorePassword.PasswordChar = '*';
+            this.tbRestorePassword.Size = new System.Drawing.Size(178, 20);
+            this.tbRestorePassword.TabIndex = 4;
+            this.tbRestorePassword.Text = "dbuser";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(296, 40);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(29, 13);
+            this.label23.TabIndex = 6;
+            this.label23.Text = "Port:";
+            // 
+            // tbRestorePort
+            // 
+            this.tbRestorePort.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbRestorePort.Location = new System.Drawing.Point(331, 37);
+            this.tbRestorePort.Name = "tbRestorePort";
+            this.tbRestorePort.Size = new System.Drawing.Size(52, 20);
+            this.tbRestorePort.TabIndex = 2;
+            this.tbRestorePort.Text = "3306";
+            // 
+            // buRestoreDatabase
+            // 
+            this.buRestoreDatabase.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buRestoreDatabase.Location = new System.Drawing.Point(171, 368);
+            this.buRestoreDatabase.Margin = new System.Windows.Forms.Padding(2);
+            this.buRestoreDatabase.Name = "buRestoreDatabase";
+            this.buRestoreDatabase.Size = new System.Drawing.Size(124, 25);
+            this.buRestoreDatabase.TabIndex = 32;
+            this.buRestoreDatabase.Text = "Restore Database";
+            this.buRestoreDatabase.UseVisualStyleBackColor = true;
+            // 
+            // rtbRestoreProgress
+            // 
+            this.rtbRestoreProgress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.rtbRestoreProgress.Location = new System.Drawing.Point(5, 272);
+            this.rtbRestoreProgress.Name = "rtbRestoreProgress";
+            this.rtbRestoreProgress.ReadOnly = true;
+            this.rtbRestoreProgress.Size = new System.Drawing.Size(412, 91);
+            this.rtbRestoreProgress.TabIndex = 34;
+            this.rtbRestoreProgress.TabStop = false;
+            this.rtbRestoreProgress.Text = "";
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.tbRestoreCommandLine);
+            this.groupBox5.Controls.Add(this.label16);
+            this.groupBox5.Location = new System.Drawing.Point(5, 194);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox5.Size = new System.Drawing.Size(412, 73);
+            this.groupBox5.TabIndex = 33;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "MySQL Dump Options";
+            // 
+            // tbRestoreCommandLine
+            // 
+            this.tbRestoreCommandLine.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbRestoreCommandLine.Location = new System.Drawing.Point(11, 35);
+            this.tbRestoreCommandLine.Margin = new System.Windows.Forms.Padding(2);
+            this.tbRestoreCommandLine.Name = "tbRestoreCommandLine";
+            this.tbRestoreCommandLine.Size = new System.Drawing.Size(396, 20);
+            this.tbRestoreCommandLine.TabIndex = 24;
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(9, 18);
+            this.label16.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(165, 13);
+            this.label16.TabIndex = 0;
+            this.label16.Text = "Additional Command Line Options";
+            // 
+            // buCancelRestore
+            // 
+            this.buCancelRestore.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buCancelRestore.Location = new System.Drawing.Point(307, 368);
+            this.buCancelRestore.Name = "buCancelRestore";
+            this.buCancelRestore.Size = new System.Drawing.Size(110, 25);
+            this.buCancelRestore.TabIndex = 35;
+            this.buCancelRestore.Text = "Cancel Restore";
+            this.buCancelRestore.UseVisualStyleBackColor = true;
+            this.buCancelRestore.Visible = false;
             // 
             // frMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(843, 517);
-            this.Controls.Add(this.statusStrip1);
+            this.ClientSize = new System.Drawing.Size(880, 504);
             this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "frMain";
-            this.Text = "MySQL Backup";
+            this.Text = "MySQL Backup & Restore";
             this.Load += new System.EventHandler(this.frMain_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -855,30 +1101,36 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox tbPassword;
-        private System.Windows.Forms.TextBox tbUserName;
-        private System.Windows.Forms.TextBox tbHostName;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox tbPort;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button buTestConnection;
         private System.Windows.Forms.ErrorProvider errorProvider1;
-        private System.Windows.Forms.CheckedListBox clbDatabases;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox tbDumpLocation;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Button buDumpLocation;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.ToolStripStatusLabel tsslCurrentConfig;
+        private System.Windows.Forms.ToolStripMenuItem clearAllItemsToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
+        private System.Windows.Forms.ToolStripMenuItem schedulerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editScheduleToolStripMenuItem;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.Button buCancelTest;
+        private System.Windows.Forms.RichTextBox rtbOutput;
+        private System.Windows.Forms.Button buTestConfig;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TextBox tbMySQLDumpOptions;
+        private System.Windows.Forms.Label label14;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox cbSendEmail;
+        private System.Windows.Forms.TextBox tbFromAddress;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Button buTestEmail;
+        private System.Windows.Forms.TextBox tbEmailAddress;
+        private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox tbSMTPServer;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
@@ -887,40 +1139,54 @@
         private System.Windows.Forms.TextBox tbSMTPPassword;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox tbSMTPPort;
-        private System.Windows.Forms.ToolStripStatusLabel tsslCurrentConfig;
-        private System.Windows.Forms.ToolStripMenuItem clearAllItemsToolStripMenuItem;
-        private System.Windows.Forms.CheckBox cbSelectDatabases;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Button buSaveLocation;
-        private System.Windows.Forms.TextBox tbSaveLocation;
-        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox tbEmailAddress;
-        private System.Windows.Forms.Button buTestEmail;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox tbDaystoKeep;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.TextBox tbMySQLDumpOptions;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Button buTestConfig;
-        private System.Windows.Forms.RichTextBox rtbOutput;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox cbDBDirs;
         private System.Windows.Forms.CheckBox cbRemoveDumpFile;
         private System.Windows.Forms.CheckBox cbCompress;
-        private System.Windows.Forms.CheckBox cbDBDirs;
-        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
-        private System.Windows.Forms.TextBox tbFromAddress;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.CheckBox cbSendEmail;
-        private System.Windows.Forms.Button buCancelTest;
-        private System.Windows.Forms.ToolStripMenuItem schedulerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem startSchedulerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem editScheduleToolStripMenuItem;
-        private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.TextBox tbDaystoKeep;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button buSaveLocation;
+        private System.Windows.Forms.TextBox tbSaveLocation;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.CheckBox cbSelectDatabases;
+        private System.Windows.Forms.TextBox tbHostName;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button buDumpLocation;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tbDumpLocation;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tbUserName;
+        private System.Windows.Forms.CheckedListBox clbDatabases;
+        private System.Windows.Forms.TextBox tbPassword;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button buTestConnection;
+        private System.Windows.Forms.TextBox tbPort;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button buRestoreDatabase;
+        private System.Windows.Forms.Button buRestoreFileLocationRequestor;
+        private System.Windows.Forms.TextBox tbRestoreFileLocation;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.TextBox tbRestoreHostName;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button buRestoreMySQLRequestor;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.TextBox tbRestoreMySQLLocation;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.TextBox tbRestoreUserName;
+        private System.Windows.Forms.TextBox tbRestorePassword;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.TextBox tbRestorePort;
+        private System.Windows.Forms.Button buCancelRestore;
+        private System.Windows.Forms.RichTextBox rtbRestoreProgress;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.TextBox tbRestoreCommandLine;
+        private System.Windows.Forms.Label label16;
     }
 }
 

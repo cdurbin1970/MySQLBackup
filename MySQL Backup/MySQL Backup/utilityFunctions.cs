@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using iniReader;
 using MySql.Data.MySqlClient;
-
-using System.Windows;
-using System.Windows.Controls;
-using System.Net;
 using System.Net.Mail;
-using System.Net.Mime;
-using System.Threading;
-using System.ComponentModel;
-
-using Encryption_Lib;
     
    public class utilityFunctions {       
 
@@ -254,14 +241,149 @@ using Encryption_Lib;
             }
         }
 
-     /*  public static IEnumerable<T> FindVisualChildren<T>(DependencyObject obj) where T : DependencyObject {
-            if (obj != null) {
-                if (obj is T)
-                    yield return obj as T;
+    /// <summary>
+    /// Scheduler error and result codes
+    /// </summary>
+    /// <param name="error">
+    /// Error code
+    /// </param>
+    /// <returns>
+    /// String type message
+    /// </returns>
+     
+    public static string schedulerErrors(string error)
+       {
+           string message = "Unknown Result";
+           switch (error)
+           {
+            case "0":
+                   message = "Operation completed successfully";
+                   break;
+            case "267008":
+                message = "Task is ready";
+                break;
+            case "267009":
+                message = "Task is running";
+                break;
+            case "267010":
+                message = "Task is disabled";
+                break;
+            case "267011":
+                message = "Task has never run";
+                break;
+            case "267012":
+                message = "Task has no more runs";
+                break;
+            case "267013":
+                message = "Task is not scheduled";
+                break ;
+            case "267014":
+                message = "Task terminated by user";
+                break;
+            case "267015":
+                message = "Task has no valid triggers";
+                break;
+            case "267016":
+                message = "No trigger run times";
+                break;
+            case "2147750665":
+                message = "Trigger not found";
+                break;
+            case "2147750666":
+                message = "Task not ready";
+                break;
+            case "2147750667":
+                message = "Task not running";
+                break;
+            case "2147750668":
+                message = "Scheduler service not installed";
+                break;
+            case "2147750669":
+                message = "Cannot open task";
+                break;
+            case "2147750670":
+                message = "Invalid task";
+                break;
+            case "2147750671":
+                message = "Account information not set";
+                break;
+            case "2147750672":
+                message = "Account name not found";
+                break;
+            case "2147750673":
+                message = "Account database corrupted";
+                break;
+            case "2147750674":
+                message = "No security services available";
+                break;
+            case "2147750675":
+                message = "Unknown object version";
+                break;
+            case "2147750676":
+                message = "Unsupported account options";
+                break;
+            case "2147750677":
+                message = "Scheduler service not running";
+                break;
+            case "2147750678":
+                message = "Malformed task XML";
+                break;
+            case "2147750679":
+                message = "Task XML unexpected namespace";
+                break;
+            case "2147750680":
+                message = "Invalid value in task XML";
+                break;
+            case "2147750681":
+                message = "Missing node in task XML";
+                break;
+            case "2147750682":
+                message = "Malformed task XML";
+                break;
+            case "267035":
+                message = "Some triggers failed";
+                break;
+            case "267036":
+                message = "Batch logon problems.";
+                break;
+            case "2147750685":
+                message = "Task XML contains too many nodes";
+                break;
+            case "2147750686":
+                message = "Schedule past end boundary";
+                break;
+            case "2147750687":
+                message = "Task already running";
+                break;
+            case "2147750688":
+                message = "User not logged in";
+                break;
+            case "2147750689":
+                message = "Task image is corrupt";
+                break;
+            case "2147750690":
+                message = "Scheduler service not available";
+                break;
+            case "2147750691":
+                message = "Scheduler service too busy";
+                break;
+            case "2147750692":
+                message = "Task was attempted but failed";
+                break;
+            case "267045":
+                message = "Task has been queued";
+                break;
+            case "2147750694":
+                message = "Task is disabled";
+                break;
+            case "2147750695":
+                message = "Task not V1 compatible";
+                break;
+            case "2147750696":
+                message = "Task cannot start on demand";
+                break;
+        }
+        return message;
+    }
 
-                foreach (DependencyObject child in LogicalTreeHelper.GetChildren(obj).OfType<DependencyObject>())
-                    foreach (T c in FindVisualChildren<T>(child))
-                        yield return c;
-            }
-        }*/   
    }
