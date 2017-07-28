@@ -78,7 +78,7 @@ namespace MySQL_Backup {
             toolTip1.SetToolTip(this.tbSMTPPort, @"Port for the SMTP server (Default is 25).");
             toolTip1.SetToolTip(this.tbEmailAddress, @"Email address to send reports to.");
             toolTip1.SetToolTip(this.tbFromAddress, @"The from email address.");
-            toolTip1.SetToolTip(this.buTestConfig, @"The test will use the first checked database in the list.");
+            toolTip1.SetToolTip(this.buTestConfig, @"The test will backup all databases in the list that are checked.");
             
             // Create our fileinfo object
             var objFileInfo = new FileInfo(Application.ExecutablePath);
@@ -519,171 +519,200 @@ namespace MySQL_Backup {
         ///////////////////////////////////////////////////////////////////////////////////////
 
         private void buTestConfig_Click(object sender, EventArgs e) {
-            // Since this is a test, we're only going to do one backup.
             // To make this a quicker process, we could probably open up a zip archive and dump the output directly to it.
             // I chose to create the dump file in a temp directory, create a zip file if asked, move the dump file into it, delete the dump file 
             // if appropriate then move the file into the save location.
 
-            string dbName = "";
+            //string dbName = "";
             string dbSaveDirectory = "";
             DateTime now = DateTime.Now;
             string dateStamp = now.ToString("yyyy_MM_dd_HH_mm_ss_");
   
             rtbOutput.Text = "";
 
-            //Get the first database name from the list that has been checked. We'll use that.
+            List<string> dbNames = new List<string>();
             for (int x = 0; x < clbDatabases.Items.Count; x++) {
                 if (clbDatabases.GetItemChecked(x)) {
-                    dbName = (string)clbDatabases.Items[x];
-                    break;
+                    dbNames.Add((string)clbDatabases.Items[x]);
                 }
             }
-
-            if (dbName == "") {
-                utilityFunctions.displayErrorMessage("Please select one database from the list before trying to test.", "Database Selection Error", false);
-                return;
-            }
-
-            // Check to see if we should be using individual dirs for each database
-            if (cbDBDirs.Checked) {
-                dbSaveDirectory = tbSaveLocation.Text + @"\" + dbName + @"\";
-            }
-            else {
-                dbSaveDirectory = tbSaveLocation.Text + @"\";
-            }
-
-            //put it all together, notice that were using the --result-file command line. This allows us to not have to use a streamwriter with redirected output.
-            //string cmd = String.Format("-h{0} -u{1} -p{2} --opt --databases {3} --result-file={4}", tbHostName.Text, tbUserName.Text, tbPassword.Text, dbName, tbSaveLocation.Text + "/" + dbName + "/" + now.ToString("yyyy_MM_dd_HH_mm_ss_") + dbName + ".sql");
-            // Check to see if a folder location exists. Which is usually backuplocation/dbname/date_dbname.sql
-            if (!Directory.Exists(dbSaveDirectory)) {
-                try {
-                    Directory.CreateDirectory(dbSaveDirectory);
-                }
-                catch (IOException) {
-                    rtbOutput.Text = "Could not create save directory, aborting backup.";
-                    return;
-                }
-            }
-
-            // Check for our temp directory
-            if (!Directory.Exists(@"temp\")) {
-                try {
-                    Directory.CreateDirectory(@"temp\");
-                }
-                catch (IOException) {
-                    rtbOutput.Text = "Could not create temp directory and it does not exist, aborting backup.";
-                    return;
-                }
-            }
-            // Make the cancel button visible
-            buCancelTest.Visible = true;
-
-            // Create a string array to hold all of our parameters in.
-            string[] parameters = { tbHostName.Text, tbUserName.Text, tbPassword.Text, tbMySQLDumpOptions.Text, dbName, tbDumpLocation.Text, dateStamp };
-
-            rtbOutput.Text = "Command Line Used: " + parameters[5] + " " + String.Format("-h{0} -u{1} -p[password] {2} --databases {3} --result-file={4}", parameters[0], parameters[1], parameters[3], parameters[4], @"temp\" + parameters[6] + parameters[4] + ".sql\n");
+            
+            foreach (string dbName in dbNames) {
                 
-            //Create a background worker to do the actual backup in.           
-            BackgroundWorker backupThread = new BackgroundWorker();
-            backupThread.WorkerReportsProgress = false;
-            backupThread.WorkerSupportsCancellation = false;
-            backupThread.DoWork += backupDataBase;
-            backupThread.RunWorkerAsync(parameters);
-            
-            // Start the control to show it is doing something
-            toolStripProgressBar1.Visible = true;
-            toolStripProgressBar1.Enabled = true;
-            
-            // Wait while the thread completes, doevents so the form is not frozen.
-            while (backupThread.IsBusy) {
-                Application.DoEvents();
-            }
-
-            // Check to see if we return anything other than OK.
-            if (error != "OK") {
-                rtbOutput.Text = error;                
-                toolStripProgressBar1.Visible = false;
-                toolStripProgressBar1.Enabled = false;
-                if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
-                    string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
+                if (dbName == "") {
+                    utilityFunctions.displayErrorMessage("Please select one database from the list before trying to test.", "Database Selection Error",false);
+                    return;
                 }
-                // Make the cancel button invisible
-                buCancelTest.Visible = false;
-                return;
-            }
 
-            // Make the cancel button invisible
-            buCancelTest.Visible = false;
-            rtbOutput.Text = rtbOutput.Text + "Dump of " + dbName + " Complete.\n";
-         
-            if (cbCompress.Checked) {
-                // create a background worker to do the zip.
-                BackgroundWorker zipThread = new BackgroundWorker();
-                zipThread.WorkerReportsProgress = false;
-                zipThread.WorkerSupportsCancellation = false;
-                zipThread.DoWork += zipDataBase;
-                zipThread.RunWorkerAsync(parameters);
-
-                // Wait while the thread completes, doevents so the form is not frozen.
-                while (zipThread.IsBusy) {
-                    Application.DoEvents();
-                }
-                if (error == "OK") {
-                    rtbOutput.Text = rtbOutput.Text + "Zip of " + dbName + " Complete.\n";                    
+                // Check to see if we should be using individual dirs for each database
+                if (cbDBDirs.Checked) {
+                    dbSaveDirectory = tbSaveLocation.Text + @"\" + dbName + @"\";
                 }
                 else {
-                    rtbOutput.Text = rtbOutput.Text + error;                    
+                    dbSaveDirectory = tbSaveLocation.Text + @"\";
+                }
+
+                //put it all together, notice that were using the --result-file command line. This allows us to not have to use a streamwriter with redirected output.
+                //string cmd = String.Format("-h{0} -u{1} -p{2} --opt --databases {3} --result-file={4}", tbHostName.Text, tbUserName.Text, tbPassword.Text, dbName, tbSaveLocation.Text + "/" + dbName + "/" + now.ToString("yyyy_MM_dd_HH_mm_ss_") + dbName + ".sql");
+                // Check to see if a folder location exists. Which is usually backuplocation/dbname/date_dbname.sql
+                if (!Directory.Exists(dbSaveDirectory)) {
+                    try {
+                        Directory.CreateDirectory(dbSaveDirectory);
+                    }
+                    catch (IOException) {
+                        rtbOutput.Text = "Could not create save directory, aborting backup.";
+                        return;
+                    }
+                }
+
+                // Check for our temp directory
+                if (!Directory.Exists(@"temp\")) {
+                    try {
+                        Directory.CreateDirectory(@"temp\");
+                    }
+                    catch (IOException) {
+                        rtbOutput.Text = "Could not create temp directory and it does not exist, aborting backup.";
+                        return;
+                    }
+                }
+                // Make the cancel button visible
+                buCancelTest.Visible = true;
+
+                // Create a string array to hold all of our parameters in.
+                string[] parameters =
+                {
+                    tbHostName.Text, tbUserName.Text, tbPassword.Text, tbMySQLDumpOptions.Text, dbName,
+                    tbDumpLocation.Text, dateStamp
+                };
+
+                rtbOutput.Text = rtbOutput.Text + "Command Line Used: " + parameters[5] + " " + String.Format("-h{0} -u{1} -p[password] {2} --databases {3} --result-file={4}", parameters[0], parameters[1], parameters[3], parameters[4],@"temp\" + parameters[6] + parameters[4] + ".sql\n");
+
+                //Create a background worker to do the actual backup in.           
+                BackgroundWorker backupThread = new BackgroundWorker();
+                backupThread.WorkerReportsProgress = false;
+                backupThread.WorkerSupportsCancellation = false;
+                backupThread.DoWork += backupDataBase;
+                backupThread.RunWorkerAsync(parameters);
+
+                // Start the control to show it is doing something
+                toolStripProgressBar1.Visible = true;
+                toolStripProgressBar1.Enabled = true;
+
+                // Wait while the thread completes, doevents so the form is not frozen.
+                while (backupThread.IsBusy) {
+                    Application.DoEvents();
+                }
+
+                // Check to see if we return anything other than OK.
+                if (error != "OK") {
+                    rtbOutput.Text = error;
                     toolStripProgressBar1.Visible = false;
                     toolStripProgressBar1.Enabled = false;
                     if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
-                        string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
-                    }                   
+                        string message = utilityFunctions.SendEmail(new string[]
+                        {
+                            tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text,
+                            tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification",
+                            "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" +
+                            rtbOutput.Text
+                        });
+                    }
+                    // Make the cancel button invisible
+                    buCancelTest.Visible = false;
                     return;
-                }              
-            }
+                }
 
-            if (cbRemoveDumpFile.Checked) {
-                // Remove the original .sql file and only store the .zip
+                // Make the cancel button invisible
+                buCancelTest.Visible = false;
+                rtbOutput.Text = rtbOutput.Text + "Dump of " + dbName + " Complete.\n";
+
+                if (cbCompress.Checked) {
+                    // create a background worker to do the zip.
+                    BackgroundWorker zipThread = new BackgroundWorker();
+                    zipThread.WorkerReportsProgress = false;
+                    zipThread.WorkerSupportsCancellation = false;
+                    zipThread.DoWork += zipDataBase;
+                    zipThread.RunWorkerAsync(parameters);
+
+                    // Wait while the thread completes, doevents so the form is not frozen.
+                    while (zipThread.IsBusy) {
+                        Application.DoEvents();
+                    }
+                    if (error == "OK") {
+                        rtbOutput.Text = rtbOutput.Text + "Zip of " + dbName + " Complete.\n";
+                    }
+                    else {
+                        rtbOutput.Text = rtbOutput.Text + error;
+                        toolStripProgressBar1.Visible = false;
+                        toolStripProgressBar1.Enabled = false;
+                        if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
+                            string message = utilityFunctions.SendEmail(new string[]
+                            {
+                                tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text,
+                                tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification",
+                                "Test backup failed for database " + dbName + " on server " + tbHostName.Text +
+                                ".\n\n" + rtbOutput.Text
+                            });
+                        }
+                        return;
+                    }
+                }
+
+                if (cbRemoveDumpFile.Checked) {
+                    // Remove the original .sql file and only store the .zip
+                    try {
+                        File.Delete(@"temp\" + dateStamp + dbName + ".sql");
+                    }
+                    catch (IOException ex) {
+                        utilityFunctions.displayErrorMessage("Unable to delete the .SQL dump file.", "Error", false);
+                    }
+                }
+
+                // Everything appears to be OK so far. We're going to move the file from our temp directory to the save directory.
                 try {
-                    File.Delete(@"temp\" + dateStamp + dbName + ".sql");
+                    // Did we create a .zip file?
+                    if (cbCompress.Checked) {
+                        File.Move(@"temp\" + dateStamp + dbName + ".zip", dbSaveDirectory + dateStamp + dbName + ".zip");
+                    }
+                    // Did we delete the .sql dump file?
+                    if (!cbRemoveDumpFile.Checked) {
+                        File.Move(@"temp\" + dateStamp + dbName + ".sql", dbSaveDirectory + dateStamp + dbName + ".sql");
+                    }
                 }
                 catch (IOException ex) {
-                    utilityFunctions.displayErrorMessage("Unable to delete the .SQL dump file.", "Error", false);
+                    utilityFunctions.displayErrorMessage(ex.Message, "error", false);
+                    rtbOutput.Text = rtbOutput.Text + "Unable to move file(s) to save directory.\n";
+                    toolStripProgressBar1.Visible = false;
+                    toolStripProgressBar1.Enabled = false;
+                    if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
+                        string message = utilityFunctions.SendEmail(new string[]
+                        {
+                            tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text,
+                            tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification",
+                            "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" +
+                            rtbOutput.Text
+                        });
+                    }
+                    return;
                 }
-            }
 
-            // Everything appears to be OK so far. We're going to move the file from our temp directory to the save directory.
-            try {
-                // Did we create a .zip file?
-                if (cbCompress.Checked) {
-                    File.Move(@"temp\" + dateStamp + dbName + ".zip", dbSaveDirectory + dateStamp + dbName + ".zip");
-                }
-                // Did we delete the .sql dump file?
-                if (!cbRemoveDumpFile.Checked) {
-                    File.Move(@"temp\" + dateStamp + dbName + ".sql", dbSaveDirectory + dateStamp + dbName + ".sql");
-                }                
-            }
-            catch (IOException ex) {
-                utilityFunctions.displayErrorMessage(ex.Message, "error", false);
-                rtbOutput.Text = rtbOutput.Text + "Unable to move file(s) to save directory.\n";
+                rtbOutput.Text = rtbOutput.Text + "Backup of: " + dbName + " Complete.\n";
+                rtbOutput.Text = rtbOutput.Text + "Backup saved to: " + dbSaveDirectory + "\n";
+
+                rtbOutput.Text = rtbOutput.Text + "Total Backup Time: " + DateTime.Now.Subtract(now).TotalSeconds.ToString("########") + " Seconds.\n";
+
                 toolStripProgressBar1.Visible = false;
                 toolStripProgressBar1.Enabled = false;
+
                 if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
-                    string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup failed for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
-                }                
-                return;
-            }
-
-            rtbOutput.Text = rtbOutput.Text + "Backup of: " + dbName + " Complete.\n";
-            rtbOutput.Text = rtbOutput.Text + "Backup saved to: " + dbSaveDirectory + "\n";
-            
-            rtbOutput.Text = rtbOutput.Text + "Total Backup Time: " + DateTime.Now.Subtract(now).TotalSeconds.ToString("########") + " Seconds.\n";
-            
-            toolStripProgressBar1.Visible = false;
-            toolStripProgressBar1.Enabled = false;            
-
-            if (cbSendEmail.Checked && tbSMTPServer.Text != "" && tbEmailAddress.Text != "" && tbFromAddress.Text != "") {
-                string message = utilityFunctions.SendEmail(new string[] { tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup complete for database " + dbName + " on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text });
+                    string message = utilityFunctions.SendEmail(new string[]
+                    {
+                        tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text,
+                        tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification",
+                        "Test backup complete for database " + dbName + " on server " + tbHostName.Text + ".\n\n" +
+                        rtbOutput.Text
+                    });
+                }
             }
         }
 
