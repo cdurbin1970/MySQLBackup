@@ -15,11 +15,9 @@ using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 
-namespace Encryption_Lib
-{
+namespace Encryption_Lib {
 
-    public static class AESGCM
-    {
+    public static class AESGCM {
         private static readonly SecureRandom Random = new SecureRandom();
 
         //Preconfigured Encryption Parameters
@@ -37,8 +35,7 @@ namespace Encryption_Lib
         /// Helper that generates a random new key on each call.
         /// </summary>
         /// <returns></returns>
-        public static byte[] NewKey()
-        {
+        public static byte[] NewKey() {
             var key = new byte[KeyBitSize / 8];
             Random.NextBytes(key);
             return key;
@@ -57,8 +54,7 @@ namespace Encryption_Lib
         /// <remarks>
         /// Adds overhead of (Optional-Payload + BlockSize(16) + Message +  HMac-Tag(16)) * 1.33 Base64
         /// </remarks>
-        public static string SimpleEncrypt(string secretMessage, byte[] key, byte[] nonSecretPayload = null)
-        {
+        public static string SimpleEncrypt(string secretMessage, byte[] key, byte[] nonSecretPayload = null) {
             if (string.IsNullOrEmpty(secretMessage))
                 throw new ArgumentException("Secret Message Required!", "secretMessage");
 
@@ -67,7 +63,6 @@ namespace Encryption_Lib
             return Convert.ToBase64String(cipherText);
         }
 
-
         /// <summary>
         /// Simple Decryption & Authentication (AES-GCM) of a UTF8 Message
         /// </summary>
@@ -75,8 +70,7 @@ namespace Encryption_Lib
         /// <param name="key">The key.</param>
         /// <param name="nonSecretPayloadLength">Length of the optional non-secret payload.</param>
         /// <returns>Decrypted Message</returns>
-        public static string SimpleDecrypt(string encryptedMessage, byte[] key, int nonSecretPayloadLength = 0)
-        {
+        public static string SimpleDecrypt(string encryptedMessage, byte[] key, int nonSecretPayloadLength = 0) {
             if (string.IsNullOrEmpty(encryptedMessage))
                 throw new ArgumentException("Encrypted Message Required!", "encryptedMessage");
 
@@ -99,9 +93,7 @@ namespace Encryption_Lib
         /// Significantly less secure than using random binary keys.
         /// Adds additional non secret payload for key generation parameters.
         /// </remarks>
-        public static string SimpleEncryptWithPassword(string secretMessage, string password,
-                                                       byte[] nonSecretPayload = null)
-        {
+        public static string SimpleEncryptWithPassword(string secretMessage, string password, byte[] nonSecretPayload = null) {
             if (string.IsNullOrEmpty(secretMessage))
                 throw new ArgumentException("Secret Message Required!", "secretMessage");
 
@@ -109,7 +101,6 @@ namespace Encryption_Lib
             var cipherText = SimpleEncryptWithPassword(plainText, password, nonSecretPayload);
             return Convert.ToBase64String(cipherText);
         }
-
 
         /// <summary>
         /// Simple Decryption and Authentication (AES-GCM) of a UTF8 message
@@ -125,9 +116,7 @@ namespace Encryption_Lib
         /// <remarks>
         /// Significantly less secure than using random binary keys.
         /// </remarks>
-        public static string SimpleDecryptWithPassword(string encryptedMessage, string password,
-                                                       int nonSecretPayloadLength = 0)
-        {
+        public static string SimpleDecryptWithPassword(string encryptedMessage, string password, int nonSecretPayloadLength = 0) {
             if (string.IsNullOrWhiteSpace(encryptedMessage))
                 throw new ArgumentException("Encrypted Message Required!", "encryptedMessage");
 
@@ -135,7 +124,6 @@ namespace Encryption_Lib
             var plainText = SimpleDecryptWithPassword(cipherText, password, nonSecretPayloadLength);
             return plainText == null ? null : Encoding.UTF8.GetString(plainText);
         }
-
 
         /// <summary>
         /// Simple Encryption And Authentication (AES-GCM) of a UTF8 string.
@@ -147,8 +135,7 @@ namespace Encryption_Lib
         /// <remarks>
         /// Adds overhead of (Optional-Payload + BlockSize(16) + Message +  HMac-Tag(16)) * 1.33 Base64
         /// </remarks>
-        public static byte[] SimpleEncrypt(byte[] secretMessage, byte[] key, byte[] nonSecretPayload = null)
-        {
+        public static byte[] SimpleEncrypt(byte[] secretMessage, byte[] key, byte[] nonSecretPayload = null) {
             //User Error Checks
             if (key == null || key.Length != KeyBitSize / 8)
                 throw new ArgumentException(String.Format("Key needs to be {0} bit!", KeyBitSize), "key");
@@ -173,10 +160,8 @@ namespace Encryption_Lib
             cipher.DoFinal(cipherText, len);
 
             //Assemble Message
-            using (var combinedStream = new MemoryStream())
-            {
-                using (var binaryWriter = new BinaryWriter(combinedStream))
-                {
+            using (var combinedStream = new MemoryStream()) {
+                using (var binaryWriter = new BinaryWriter(combinedStream)) {
                     //Prepend Authenticated Payload
                     binaryWriter.Write(nonSecretPayload);
                     //Prepend Nonce
@@ -195,8 +180,7 @@ namespace Encryption_Lib
         /// <param name="key">The key.</param>
         /// <param name="nonSecretPayloadLength">Length of the optional non-secret payload.</param>
         /// <returns>Decrypted Message</returns>
-        public static byte[] SimpleDecrypt(byte[] encryptedMessage, byte[] key, int nonSecretPayloadLength = 0)
-        {
+        public static byte[] SimpleDecrypt(byte[] encryptedMessage, byte[] key, int nonSecretPayloadLength = 0) {
             //User Error Checks
             if (key == null || key.Length != KeyBitSize / 8)
                 throw new ArgumentException(String.Format("Key needs to be {0} bit!", KeyBitSize), "key");
@@ -205,8 +189,7 @@ namespace Encryption_Lib
                 throw new ArgumentException("Encrypted Message Required!", "encryptedMessage");
 
             using (var cipherStream = new MemoryStream(encryptedMessage))
-            using (var cipherReader = new BinaryReader(cipherStream))
-            {
+            using (var cipherReader = new BinaryReader(cipherStream)) {
                 //Grab Payload
                 var nonSecretPayload = cipherReader.ReadBytes(nonSecretPayloadLength);
 
@@ -221,21 +204,17 @@ namespace Encryption_Lib
                 var cipherText = cipherReader.ReadBytes(encryptedMessage.Length - nonSecretPayloadLength - nonce.Length);
                 var plainText = new byte[cipher.GetOutputSize(cipherText.Length)];
 
-                try
-                {
+                try {
                     var len = cipher.ProcessBytes(cipherText, 0, cipherText.Length, plainText, 0);
                     cipher.DoFinal(plainText, len);
 
                 }
-                catch (InvalidCipherTextException)
-                {
+                catch (InvalidCipherTextException) {
                     //Return null if it doesn't authenticate
                     return null;
                 }
-
                 return plainText;
             }
-
         }
 
         /// <summary>
@@ -253,8 +232,7 @@ namespace Encryption_Lib
         /// Significantly less secure than using random binary keys.
         /// Adds additional non secret payload for key generation parameters.
         /// </remarks>
-        public static byte[] SimpleEncryptWithPassword(byte[] secretMessage, string password, byte[] nonSecretPayload = null)
-        {
+        public static byte[] SimpleEncryptWithPassword(byte[] secretMessage, string password, byte[] nonSecretPayload = null) {
             nonSecretPayload = nonSecretPayload ?? new byte[] { };
 
             //User Error Checks
@@ -270,10 +248,7 @@ namespace Encryption_Lib
             var salt = new byte[SaltBitSize / 8];
             Random.NextBytes(salt);
 
-            generator.Init(
-                PbeParametersGenerator.Pkcs5PasswordToBytes(password.ToCharArray()),
-                salt,
-                Iterations);
+            generator.Init(PbeParametersGenerator.Pkcs5PasswordToBytes(password.ToCharArray()),salt,Iterations);
 
             //Generate Key
             var key = (KeyParameter)generator.GenerateDerivedMacParameters(KeyBitSize);
@@ -300,8 +275,7 @@ namespace Encryption_Lib
         /// <remarks>
         /// Significantly less secure than using random binary keys.
         /// </remarks>
-        public static byte[] SimpleDecryptWithPassword(byte[] encryptedMessage, string password, int nonSecretPayloadLength = 0)
-        {
+        public static byte[] SimpleDecryptWithPassword(byte[] encryptedMessage, string password, int nonSecretPayloadLength = 0) {
             //User Error Checks
             if (string.IsNullOrWhiteSpace(password) || password.Length < MinPasswordLength)
                 throw new ArgumentException(String.Format("Must have a password of at least {0} characters!", MinPasswordLength), "password");
@@ -315,10 +289,7 @@ namespace Encryption_Lib
             var salt = new byte[SaltBitSize / 8];
             Array.Copy(encryptedMessage, nonSecretPayloadLength, salt, 0, salt.Length);
 
-            generator.Init(
-                PbeParametersGenerator.Pkcs5PasswordToBytes(password.ToCharArray()),
-                salt,
-                Iterations);
+            generator.Init(PbeParametersGenerator.Pkcs5PasswordToBytes(password.ToCharArray()),salt,Iterations);
 
             //Generate Key
             var key = (KeyParameter)generator.GenerateDerivedMacParameters(KeyBitSize);

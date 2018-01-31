@@ -2,7 +2,8 @@
 <profile>
   <section name="General">
     <entry name="Config Version">1.0</entry>
-    <entry name="Server">localhost</entry>
+	<entry name="OS">Windows</entry>
+	<entry name="Server">localhost</entry>
     <entry name="Port">3306</entry>
     <entry name="Username">dbuser</entry>
     <entry name="SQLPassword">0usGFvZL63SVPjDZhvSRkz/XmM9eFVt1FobaEicz7KPeh4ZR+l4=</entry>

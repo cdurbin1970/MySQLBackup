@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using iniReader;
 using MySql.Data.MySqlClient;
 using System.Net.Mail;
     
@@ -169,30 +168,6 @@ using System.Net.Mail;
                 System.Windows.Forms.MessageBox.Show(ex.Message);
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Open the configuration file and reads it in to a Configuration object
-        /// </summary>
-        /// <returns>
-        /// Returns a configuration object
-        /// </returns>
-        
-        public static Configuration ConfigOpen( string configLocation) {
-            StreamReader inireader = null;
-            Configuration objinifile = null;
-
-            // Get the path for our exe file so that it reads in the ini file no matter where we put it.
-            try {
-                inireader = new StreamReader(configLocation);
-                objinifile = new Configuration(inireader);
-                inireader.Close();
-            }
-            catch (Exception) {
-                System.Windows.Forms.MessageBox.Show("Unable to read configuration file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            return objinifile;            
         }
 
         /// <summary>
