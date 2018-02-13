@@ -41,12 +41,16 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.schedulerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editScheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.startSchedulerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.tsslCurrentConfig = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslConfigText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -125,10 +129,9 @@
             this.tbRestorePassword = new System.Windows.Forms.TextBox();
             this.label23 = new System.Windows.Forms.Label();
             this.tbRestorePort = new System.Windows.Forms.TextBox();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.startSchedulerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsslCurrentConfig = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cmsDatabaseList = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmiDatabaseInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
@@ -140,6 +143,7 @@
             this.tabPage2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            this.cmsDatabaseList.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -175,9 +179,9 @@
             this.newToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem.Image")));
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(190, 26);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.newToolStripMenuItem.Text = "New";
-            this.newToolStripMenuItem.Click += new System.EventHandler(this.clearConfigItems);
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.ClearConfigItems);
             // 
             // clearAllItemsToolStripMenuItem
             // 
@@ -186,7 +190,7 @@
             | System.Windows.Forms.Keys.N)));
             this.clearAllItemsToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.clearAllItemsToolStripMenuItem.Text = "Clear All Items";
-            this.clearAllItemsToolStripMenuItem.Click += new System.EventHandler(this.clearConfigItems);
+            this.clearAllItemsToolStripMenuItem.Click += new System.EventHandler(this.ClearConfigItems);
             // 
             // openToolStripMenuItem
             // 
@@ -205,7 +209,7 @@
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveConfigFile);
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveConfigFile);
             // 
             // saveAsToolStripMenuItem
             // 
@@ -215,7 +219,7 @@
             | System.Windows.Forms.Keys.S)));
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.saveAsToolStripMenuItem.Text = "Save As";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveConfigFile);
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveConfigFile);
             // 
             // toolStripMenuItem1
             // 
@@ -247,6 +251,18 @@
             this.editScheduleToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.editScheduleToolStripMenuItem.Text = "Schedule Editor";
             this.editScheduleToolStripMenuItem.Click += new System.EventHandler(this.editScheduleToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(153, 6);
+            // 
+            // startSchedulerToolStripMenuItem
+            // 
+            this.startSchedulerToolStripMenuItem.Name = "startSchedulerToolStripMenuItem";
+            this.startSchedulerToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.startSchedulerToolStripMenuItem.Text = "Start Scheduler";
+            this.startSchedulerToolStripMenuItem.Click += new System.EventHandler(this.startSchedulerToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -281,6 +297,7 @@
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
+            this.tsslConfigText,
             this.tsslCurrentConfig,
             this.toolStripStatusLabel2,
             this.toolStripProgressBar1});
@@ -290,12 +307,24 @@
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
-            // tsslCurrentConfig
+            // toolStripStatusLabel1
             // 
-            this.tsslCurrentConfig.Name = "tsslCurrentConfig";
-            this.tsslCurrentConfig.Size = new System.Drawing.Size(99, 17);
-            this.tsslCurrentConfig.Text = "Config File: None";
-            this.tsslCurrentConfig.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            // 
+            // tsslConfigText
+            // 
+            this.tsslConfigText.Name = "tsslConfigText";
+            this.tsslConfigText.Size = new System.Drawing.Size(67, 17);
+            this.tsslConfigText.Text = "Config File:";
+            this.tsslConfigText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(109, 17);
+            this.toolStripStatusLabel2.Text = "Scheduler: Stopped";
             // 
             // toolStripProgressBar1
             // 
@@ -784,12 +813,14 @@
             // 
             // clbDatabases
             // 
+            this.clbDatabases.ContextMenuStrip = this.cmsDatabaseList;
             this.clbDatabases.FormattingEnabled = true;
             this.clbDatabases.Location = new System.Drawing.Point(77, 143);
             this.clbDatabases.Name = "clbDatabases";
             this.clbDatabases.Size = new System.Drawing.Size(178, 94);
             this.clbDatabases.Sorted = true;
             this.clbDatabases.TabIndex = 6;
+            this.clbDatabases.ThreeDCheckBoxes = true;
             // 
             // tbPassword
             // 
@@ -1100,29 +1131,26 @@
             this.tbRestorePort.TabIndex = 2;
             this.tbRestorePort.Text = "3306";
             // 
-            // toolStripMenuItem2
+            // tsslCurrentConfig
             // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(153, 6);
+            this.tsslCurrentConfig.Name = "tsslCurrentConfig";
+            this.tsslCurrentConfig.Size = new System.Drawing.Size(36, 17);
+            this.tsslCurrentConfig.Text = "None";
             // 
-            // toolStripStatusLabel1
+            // cmsDatabaseList
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 15);
-            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            this.cmsDatabaseList.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiDatabaseInfo});
+            this.cmsDatabaseList.Name = "cmsDatabaseList";
+            this.cmsDatabaseList.Size = new System.Drawing.Size(175, 48);
             // 
-            // toolStripStatusLabel2
+            // tsmiDatabaseInfo
             // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(109, 17);
-            this.toolStripStatusLabel2.Text = "Scheduler: Stopped";
-            // 
-            // startSchedulerToolStripMenuItem
-            // 
-            this.startSchedulerToolStripMenuItem.Name = "startSchedulerToolStripMenuItem";
-            this.startSchedulerToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.startSchedulerToolStripMenuItem.Text = "Start Scheduler";
-            this.startSchedulerToolStripMenuItem.Click += new System.EventHandler(this.startSchedulerToolStripMenuItem_Click);
+            this.tsmiDatabaseInfo.Enabled = false;
+            this.tsmiDatabaseInfo.Name = "tsmiDatabaseInfo";
+            this.tsmiDatabaseInfo.Size = new System.Drawing.Size(174, 22);
+            this.tsmiDatabaseInfo.Text = "View Database Info";
+            this.tsmiDatabaseInfo.Click += new System.EventHandler(this.tsmiDatabaseInfo_Click);
             // 
             // frMain
             // 
@@ -1158,6 +1186,7 @@
             this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            this.cmsDatabaseList.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1177,7 +1206,7 @@
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.ToolStripStatusLabel tsslCurrentConfig;
+        private System.Windows.Forms.ToolStripStatusLabel tsslConfigText;
         private System.Windows.Forms.ToolStripMenuItem clearAllItemsToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
@@ -1264,6 +1293,9 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripMenuItem startSchedulerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel tsslCurrentConfig;
+        private System.Windows.Forms.ContextMenuStrip cmsDatabaseList;
+        private System.Windows.Forms.ToolStripMenuItem tsmiDatabaseInfo;
     }
 }
 

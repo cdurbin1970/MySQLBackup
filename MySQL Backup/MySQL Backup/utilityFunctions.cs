@@ -1,221 +1,228 @@
 ﻿using System;
-using System.IO;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.Net.Mail;
     
-   public class utilityFunctions {       
-
-        /// <summary>
-        /// Displays an error message box.
-        /// </summary>
-        /// <param name="displayCancel">
-        /// Should the MessageBox display a Cancel button as well as an OK button? 
-        /// </param>
-        /// <param name="caption">
-        /// The MessageBox caption
-        /// </param>
-        /// <param name="errorMessage">
-        /// Error message to display
-        /// </param>
-        /// <returns>
-        /// Returns bool true if OK is clicked, otherwise it returns false.
-        /// </returns> 
-        public static bool displayErrorMessage(string errorMessage, string caption, bool displayCancel) {
-            if (displayCancel) {
-                if (System.Windows.Forms.MessageBox.Show(errorMessage, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.OK) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            else {
-                System.Windows.Forms.MessageBox.Show(errorMessage, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);                
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Displays an information message box.
-        /// </summary>
-        /// <param name="displayCancel">
-        /// Should the MessageBox display a Cancel button as well as an OK button? 
-        /// </param>
-        /// <param name="caption">
-        /// The MessageBox caption
-        /// </param>
-        /// <param name="message">
-        /// Message to display
-        /// </param>
-        /// <returns>
-        /// Returns bool true if OK is clicked, otherwise it returns false.
-        /// </returns> 
-        public static bool displayInformationMessage(string message, string caption, bool displayCancel) {
-            if (displayCancel) {
-                if (System.Windows.Forms.MessageBox.Show(message, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            else {
-                System.Windows.Forms.MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            return true;
-        }
-       
-       /// <summary>
-       /// Sends an email
-       /// </summary>
-       /// <returns>
-       /// Returns string of Sent email. or the exception message if there is a failure.
-       /// </returns>
-       
-        public static string SendEmail(string[] parameters) {
-            // Create SMTP client
-            SmtpClient client = new SmtpClient(parameters[0]);
-            if (parameters[1] != "") {
-                client.Port = Convert.ToInt16(parameters[1]);
-            }           
-            // Specify the message content.
-            MailMessage message = new MailMessage(new MailAddress(parameters[5]), new MailAddress(parameters[4]));
-            message.Body = parameters[7];
-            message.Subject = parameters[6];
-            if (parameters[2] != "" && parameters[3] != "") {
-                client.Credentials = new System.Net.NetworkCredential(parameters[2],parameters[3]);
-            }           
-            // Try to send the message
-            try {
-                client.Send(message);
-            }
-            catch (SmtpException ex){
-                message.Dispose();
-                return ex.Message;
-            }            
-            // Clean up.
-            message.Dispose();
-            return "OK";
-        }      
-       
-       /// <summary>
-       /// Validates an email address
-       /// </summary>
-       /// <returns>
-       /// Returns a boolean
-       /// </returns>      
-       
-       public static bool ValidEmailAddress(string txtEmailID, out string errorMsg) {
-           // Confirm that the e-mail address string is not empty. 
-           if (txtEmailID.Length == 0) {
-               errorMsg = "e-mail address is required to send email.";
-               return true;
-           }
-           // Confirm that there is an "@" and a "." in the e-mail address, and in the correct order.
-           if (txtEmailID.IndexOf("@") > -1) {
-               if (txtEmailID.IndexOf(".", txtEmailID.IndexOf("@")) > txtEmailID.IndexOf("@")) {
-                   errorMsg = "";
-                   return true;
-               }
-           }
-           errorMsg = "e-mail address must be valid e-mail address format.\n" +
-              "For example 'someone@example.com' ";
-           return false;
-       }       
-
-       /// <summary>
-       /// Creates a connection to the MySQL database
-       /// </summary>
-       /// <returns>
-       /// Returns a MySqlConnection object
-       /// </returns>       
-       
-       public static MySqlConnection DBConnect(string connectionString) {         
-                  
-            // MySQL Connections
-            MySqlConnection connection = null;
-            
-            // Connect to the databases.
-            try {
-                // Try to connect to the MySQL server
-                connection = new MySqlConnection(connectionString);
-                connection.Open();
-            }
-            catch (MySqlException ex) {
-                // Catch any exceptions.
-                System.Windows.Forms.MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);                
-            }            
-            return connection;
-        }
-
-        /// <summary>
-        /// Closes a connection to the database server
-        /// </summary>
-        /// <param name="connectionObject">
-        /// The database conenction to be closed
-        /// </param>
-        /// <returns>
-        /// A boolean if the database conenction was closed or not.
-        /// </returns>
-        
-       public static bool DBClose(MySqlConnection connectionObject) {
-            try {
-                connectionObject.Close();
+public class utilityFunctions {       
+    /// <summary>
+    /// Displays an error message box.
+    /// </summary>
+    /// <param name="displayCancel">
+    /// Should the MessageBox display a Cancel button as well as an OK button? 
+    /// </param>
+    /// <param name="caption">
+    /// The MessageBox caption
+    /// </param>
+    /// <param name="errorMessage">
+    /// Error message to display
+    /// </param>
+    /// <returns>
+    /// Returns bool true if OK is clicked, otherwise it returns false.
+    /// </returns> 
+    public static bool displayErrorMessage(string errorMessage, string caption, bool displayCancel) {
+        if (displayCancel) {
+            if (System.Windows.Forms.MessageBox.Show(errorMessage, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.OK) {
                 return true;
             }
-            catch (MySqlException ex) {
-                System.Windows.Forms.MessageBox.Show(ex.Message);
+            else {
                 return false;
             }
         }
-
-        /// <summary>
-        /// Updates specific text controls on a form to have a background color when they have focus.
-        /// </summary>
-        /// <param name="thisform">
-        /// The form object that needs to be checked
-        /// </param>
-        /// <returns>
-        /// none
-        /// </returns>       
-
-        public static void textupdate(Form thisform) {
-
-            var lastColorSaved = System.Drawing.Color.Empty;
-
-            foreach (System.Windows.Forms.Control child in thisform.Controls) {
-                if (child is System.Windows.Forms.GroupBox) {
-                    foreach (System.Windows.Forms.Control tb in child.Controls) {
-                        if (tb is System.Windows.Forms.TextBox || tb is System.Windows.Forms.ComboBox || child is MaskedTextBox) {
-                            tb.Enter += (s, e) =>
-                            {
-                                var control = (System.Windows.Forms.Control)s;
-                                lastColorSaved = control.BackColor;
-                                control.BackColor = System.Drawing.Color.LightYellow;
-                            };
-                            tb.Leave += (s, e) =>
-                            {
-                                ((System.Windows.Forms.Control)s).BackColor = lastColorSaved;
-                            };
-                        }
-                    }
-                }
-                if (child is System.Windows.Forms.TextBox || child is System.Windows.Forms.ComboBox || child is MaskedTextBox) {
-                    child.Enter += (s, e) =>
-                    {
-                        var control = (System.Windows.Forms.Control)s;
-                        lastColorSaved = control.BackColor;
-                        control.BackColor = System.Drawing.Color.LightYellow;
-                    };
-                    child.Leave += (s, e) =>
-                    {
-                        ((System.Windows.Forms.Control)s).BackColor = lastColorSaved;
-                    };
-                }
+        else {
+            System.Windows.Forms.MessageBox.Show(errorMessage, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);                
+        }
+        return true;
+    }
+    /// <summary>
+    /// Displays an information message box.
+    /// </summary>
+    /// <param name="displayCancel">
+    /// Should the MessageBox display a Cancel button as well as an OK button? 
+    /// </param>
+    /// <param name="caption">
+    /// The MessageBox caption
+    /// </param>
+    /// <param name="message">
+    /// Message to display
+    /// </param>
+    /// <returns>
+    /// Returns bool true if OK is clicked, otherwise it returns false.
+    /// </returns> 
+    public static bool displayInformationMessage(string message, string caption, bool displayCancel) {
+        if (displayCancel) {
+            if (System.Windows.Forms.MessageBox.Show(message, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK) {
+                return true;
+            }
+            else {
+                return false;
             }
         }
-
+        else {
+            System.Windows.Forms.MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        return true;
+    }
+    /// <summary>
+    /// Sends an email
+    /// </summary>
+    /// <returns>
+    /// Returns string of Sent email. or the exception message if there is a failure.
+    /// </returns>
+    public static string SendEmail(string[] parameters) {
+        /*
+        utilityFunctions.SendEmail(new string[]
+        {
+            tbSMTPServer.Text, tbSMTPPort.Text, tbSMTPUserName.Text, tbSMTPPassword.Text, tbEmailAddress.Text, tbFromAddress.Text, "MySQL Backup Notification", "Test backup completed for the selected database(s) on server " + tbHostName.Text + ".\n\n" + rtbOutput.Text
+        });
+        */
+        /* var message = new MimeMessage();
+        message.From.Add (new MailboxAddress (parameters[5]));
+        message.To.Add (new MailboxAddress (parameters[4]));
+        message.Subject = parameters[6];
+        message.Body = new TextPart ("plain") {
+            Text = @parameters[7]
+        };
+        using (var client = new SmtpClient ()) {
+            // For demo-purposes, accept all SSL certificates (in case the server supports STARTTLS)
+            client.ServerCertificateValidationCallback = (s,c,h,e) => true;
+            client.Connect (parameters[0], Convert.ToInt16(parameters[1]), false);
+            // Note: only needed if the SMTP server requires authentication
+            if (parameters[2] != "" && parameters[3] != "") {
+                client.Authenticate(parameters[2],parameters[3]);
+            }
+            client.Send (message);
+            client.Disconnect (true);
+        }*/
+            
+        // Create SMTP client
+        SmtpClient client = new SmtpClient(parameters[0]);
+        if (parameters[1] != "") {
+            client.Port = Convert.ToInt16(parameters[1]);
+        }           
+        // Specify the message content.
+        MailMessage message = new MailMessage(new MailAddress(parameters[5]), new MailAddress(parameters[4]));
+        message.Body = parameters[7];
+        message.Subject = parameters[6];
+        if (parameters[2] != "" && parameters[3] != "") {
+            client.Credentials = new System.Net.NetworkCredential(parameters[2],parameters[3]);
+        }           
+        // Try to send the message
+        try {
+            client.Send(message);
+        }
+        catch (SmtpException ex){
+            message.Dispose();
+            return ex.Message;
+        }            
+        // Clean up.
+        message.Dispose();
+        return "OK";
+    }      
+    /// <summary>
+    /// Validates an email address
+    /// </summary>
+    /// <returns>
+    /// Returns a boolean
+    /// </returns>      
+    public static bool ValidEmailAddress(string txtEmailID, out string errorMsg) {
+        // Confirm that the e-mail address string is not empty. 
+        if (txtEmailID.Length == 0) {
+            errorMsg = "e-mail address is required to send email.";
+            return true;
+        }
+        // Confirm that there is an "@" and a "." in the e-mail address, and in the correct order.
+        if (txtEmailID.IndexOf("@") > -1) {
+            if (txtEmailID.IndexOf(".", txtEmailID.IndexOf("@")) > txtEmailID.IndexOf("@")) {
+                errorMsg = "";
+                return true;
+            }
+        }
+        errorMsg = "e-mail address must be valid e-mail address format.\n" +
+            "For example 'someone@example.com' ";
+        return false;
+    }       
+    /// <summary>
+    /// Creates a connection to the MySQL database
+    /// </summary>
+    /// <returns>
+    /// Returns a MySqlConnection object
+    /// </returns>       
+    public static MySqlConnection DBConnect(string connectionString) {         
+        // MySQL Connections
+        MySqlConnection connection = null;
+        // Connect to the databases.
+        try {
+            // Try to connect to the MySQL server
+            connection = new MySqlConnection(connectionString);
+            connection.Open();
+        }
+        catch (MySqlException ex) {
+            // Catch any exceptions.
+            System.Windows.Forms.MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);                
+        }            
+        return connection;
+    }
+    /// <summary>
+    /// Closes a connection to the database server
+    /// </summary>
+    /// <param name="connectionObject">
+    /// The database conenction to be closed
+    /// </param>
+    /// <returns>
+    /// A boolean if the database conenction was closed or not.
+    /// </returns>
+    public static bool DBClose(MySqlConnection connectionObject) {
+        try {
+            connectionObject.Close();
+            return true;
+        }
+        catch (MySqlException ex) {
+            System.Windows.Forms.MessageBox.Show(ex.Message);
+            return false;
+        }
+    }
+    /// <summary>
+    /// Updates specific text controls on a form to have a background color when they have focus.
+    /// </summary>
+    /// <param name="thisform">
+    /// The form object that needs to be checked
+    /// </param>
+    /// <returns>
+    /// none
+    /// </returns>       
+    public static void textupdate(Form thisform) {
+        var lastColorSaved = System.Drawing.Color.Empty;
+        foreach (System.Windows.Forms.Control child in thisform.Controls) {
+            if (child is System.Windows.Forms.GroupBox) {
+                foreach (System.Windows.Forms.Control tb in child.Controls) {
+                    if (tb is System.Windows.Forms.TextBox || tb is System.Windows.Forms.ComboBox || child is MaskedTextBox) {
+                        tb.Enter += (s, e) =>
+                        {
+                            var control = (System.Windows.Forms.Control)s;
+                            lastColorSaved = control.BackColor;
+                            control.BackColor = System.Drawing.Color.LightYellow;
+                        };
+                        tb.Leave += (s, e) =>
+                        {
+                            ((System.Windows.Forms.Control)s).BackColor = lastColorSaved;
+                        };
+                    }
+                }
+            }
+            if (child is System.Windows.Forms.TextBox || child is System.Windows.Forms.ComboBox || child is MaskedTextBox) {
+                child.Enter += (s, e) =>
+                {
+                    var control = (System.Windows.Forms.Control)s;
+                    lastColorSaved = control.BackColor;
+                    control.BackColor = System.Drawing.Color.LightYellow;
+                };
+                child.Leave += (s, e) =>
+                {
+                    ((System.Windows.Forms.Control)s).BackColor = lastColorSaved;
+                };
+            }
+        }
+    }
     /// <summary>
     /// Scheduler error and result codes
     /// </summary>
@@ -226,14 +233,12 @@ using System.Net.Mail;
     /// String type message
     /// </returns>
      
-    public static string schedulerErrors(string error)
-       {
-           string message = "Unknown Result";
-           switch (error)
-           {
+    public static string schedulerErrors(string error) {
+            string message = "Unknown Result";
+            switch (error) {
             case "0":
-                   message = "Operation completed successfully";
-                   break;
+                    message = "Operation completed successfully";
+                    break;
             case "267008":
                 message = "Task is ready";
                 break;
@@ -360,5 +365,4 @@ using System.Net.Mail;
         }
         return message;
     }
-
-   }
+}
