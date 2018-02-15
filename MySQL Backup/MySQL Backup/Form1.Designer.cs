@@ -1,6 +1,6 @@
 ﻿namespace MySQL_Backup
 {
-    partial class frMain
+    partial class FrMain
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrMain));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +50,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslConfigText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslCurrentConfig = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
@@ -100,6 +101,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.tbUserName = new System.Windows.Forms.TextBox();
             this.clbDatabases = new System.Windows.Forms.CheckedListBox();
+            this.cmsDatabaseList = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.tsmiDatabaseInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.tbPassword = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -129,21 +132,18 @@
             this.tbRestorePassword = new System.Windows.Forms.TextBox();
             this.label23 = new System.Windows.Forms.Label();
             this.tbRestorePort = new System.Windows.Forms.TextBox();
-            this.tsslCurrentConfig = new System.Windows.Forms.ToolStripStatusLabel();
-            this.cmsDatabaseList = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.tsmiDatabaseInfo = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.cmsDatabaseList.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            this.cmsDatabaseList.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -199,7 +199,7 @@
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.openToolStripMenuItem.Text = "Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -233,7 +233,7 @@
             this.quitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
             this.quitToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.quitToolStripMenuItem.Text = "Quit";
-            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
+            this.quitToolStripMenuItem.Click += new System.EventHandler(this.QuitToolStripMenuItem_Click);
             // 
             // schedulerToolStripMenuItem
             // 
@@ -250,7 +250,7 @@
             this.editScheduleToolStripMenuItem.Name = "editScheduleToolStripMenuItem";
             this.editScheduleToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.editScheduleToolStripMenuItem.Text = "Schedule Editor";
-            this.editScheduleToolStripMenuItem.Click += new System.EventHandler(this.editScheduleToolStripMenuItem_Click);
+            this.editScheduleToolStripMenuItem.Click += new System.EventHandler(this.EditScheduleToolStripMenuItem_Click);
             // 
             // toolStripMenuItem2
             // 
@@ -262,7 +262,7 @@
             this.startSchedulerToolStripMenuItem.Name = "startSchedulerToolStripMenuItem";
             this.startSchedulerToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.startSchedulerToolStripMenuItem.Text = "Start Scheduler";
-            this.startSchedulerToolStripMenuItem.Click += new System.EventHandler(this.startSchedulerToolStripMenuItem_Click);
+            this.startSchedulerToolStripMenuItem.Click += new System.EventHandler(this.StartSchedulerToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -290,7 +290,7 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.AboutToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -319,6 +319,12 @@
             this.tsslConfigText.Size = new System.Drawing.Size(67, 17);
             this.tsslConfigText.Text = "Config File:";
             this.tsslConfigText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // tsslCurrentConfig
+            // 
+            this.tsslCurrentConfig.Name = "tsslCurrentConfig";
+            this.tsslCurrentConfig.Size = new System.Drawing.Size(36, 17);
+            this.tsslCurrentConfig.Text = "None";
             // 
             // toolStripStatusLabel2
             // 
@@ -361,7 +367,7 @@
             this.buCancelTest.Text = "Cancel Test";
             this.buCancelTest.UseVisualStyleBackColor = true;
             this.buCancelTest.Visible = false;
-            this.buCancelTest.Click += new System.EventHandler(this.buCancelTest_Click);
+            this.buCancelTest.Click += new System.EventHandler(this.BuCancelTest_Click);
             // 
             // rtbOutput
             // 
@@ -384,7 +390,7 @@
             this.buTestConfig.TabIndex = 31;
             this.buTestConfig.Text = "Test Configuration";
             this.buTestConfig.UseVisualStyleBackColor = true;
-            this.buTestConfig.Click += new System.EventHandler(this.buTestConfig_Click);
+            this.buTestConfig.Click += new System.EventHandler(this.BuTestConfig_Click);
             // 
             // groupBox3
             // 
@@ -450,7 +456,7 @@
             this.cbSendEmail.TabIndex = 16;
             this.cbSendEmail.Text = "Send Email";
             this.cbSendEmail.UseVisualStyleBackColor = true;
-            this.cbSendEmail.CheckedChanged += new System.EventHandler(this.cbSendEmail_CheckedChanged);
+            this.cbSendEmail.CheckedChanged += new System.EventHandler(this.CbSendEmail_CheckedChanged);
             // 
             // tbFromAddress
             // 
@@ -481,7 +487,7 @@
             this.buTestEmail.TabIndex = 23;
             this.buTestEmail.Text = "Test Mail";
             this.buTestEmail.UseVisualStyleBackColor = true;
-            this.buTestEmail.Click += new System.EventHandler(this.buTestEmail_Click);
+            this.buTestEmail.Click += new System.EventHandler(this.BuTestEmail_Click);
             // 
             // tbEmailAddress
             // 
@@ -666,7 +672,7 @@
             this.cbRemoveDumpFile.TabIndex = 14;
             this.cbRemoveDumpFile.Text = "Remove .SQL Dump File";
             this.cbRemoveDumpFile.UseVisualStyleBackColor = true;
-            this.cbRemoveDumpFile.CheckedChanged += new System.EventHandler(this.cbRemoveDumpFile_CheckedChanged);
+            this.cbRemoveDumpFile.CheckedChanged += new System.EventHandler(this.CbRemoveDumpFile_CheckedChanged);
             // 
             // cbCompress
             // 
@@ -705,7 +711,7 @@
             this.buSaveLocation.TabIndex = 11;
             this.buSaveLocation.Text = "...";
             this.buSaveLocation.UseVisualStyleBackColor = true;
-            this.buSaveLocation.Click += new System.EventHandler(this.buSaveLocation_Click);
+            this.buSaveLocation.Click += new System.EventHandler(this.BuSaveLocation_Click);
             // 
             // tbSaveLocation
             // 
@@ -734,7 +740,7 @@
             this.cbSelectDatabases.TabIndex = 5;
             this.cbSelectDatabases.Text = "Select All Databases";
             this.cbSelectDatabases.UseVisualStyleBackColor = true;
-            this.cbSelectDatabases.CheckedChanged += new System.EventHandler(this.cbSelectDatabases_CheckedChanged);
+            this.cbSelectDatabases.CheckedChanged += new System.EventHandler(this.CbSelectDatabases_CheckedChanged);
             // 
             // tbHostName
             // 
@@ -764,7 +770,7 @@
             this.buDumpLocation.TabIndex = 9;
             this.buDumpLocation.Text = "...";
             this.buDumpLocation.UseVisualStyleBackColor = true;
-            this.buDumpLocation.Click += new System.EventHandler(this.buDumpLocation_Click);
+            this.buDumpLocation.Click += new System.EventHandler(this.BuDumpLocation_Click);
             // 
             // label2
             // 
@@ -822,6 +828,21 @@
             this.clbDatabases.TabIndex = 6;
             this.clbDatabases.ThreeDCheckBoxes = true;
             // 
+            // cmsDatabaseList
+            // 
+            this.cmsDatabaseList.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiDatabaseInfo});
+            this.cmsDatabaseList.Name = "cmsDatabaseList";
+            this.cmsDatabaseList.Size = new System.Drawing.Size(175, 26);
+            // 
+            // tsmiDatabaseInfo
+            // 
+            this.tsmiDatabaseInfo.Enabled = false;
+            this.tsmiDatabaseInfo.Name = "tsmiDatabaseInfo";
+            this.tsmiDatabaseInfo.Size = new System.Drawing.Size(174, 22);
+            this.tsmiDatabaseInfo.Text = "View Database Info";
+            this.tsmiDatabaseInfo.Click += new System.EventHandler(this.TsmiDatabaseInfo_Click);
+            // 
             // tbPassword
             // 
             this.tbPassword.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -859,7 +880,7 @@
             this.buTestConnection.TabIndex = 7;
             this.buTestConnection.Text = "Get Database Names";
             this.buTestConnection.UseVisualStyleBackColor = true;
-            this.buTestConnection.Click += new System.EventHandler(this.buGetDatabaseNames_Click);
+            this.buTestConnection.Click += new System.EventHandler(this.BuGetDatabaseNames_Click);
             // 
             // tbPort
             // 
@@ -966,6 +987,7 @@
             this.buRestoreDatabase.TabIndex = 32;
             this.buRestoreDatabase.Text = "Restore Database";
             this.buRestoreDatabase.UseVisualStyleBackColor = true;
+            this.buRestoreDatabase.Click += new System.EventHandler(this.BuRestoreDatabase_Click);
             // 
             // buRestoreFileLocationRequestor
             // 
@@ -977,6 +999,7 @@
             this.buRestoreFileLocationRequestor.TabIndex = 11;
             this.buRestoreFileLocationRequestor.Text = "...";
             this.buRestoreFileLocationRequestor.UseVisualStyleBackColor = true;
+            this.buRestoreFileLocationRequestor.Click += new System.EventHandler(this.BuRestoreFileLocationRequestor_Click);
             // 
             // groupBox5
             // 
@@ -989,7 +1012,7 @@
             this.groupBox5.Size = new System.Drawing.Size(412, 73);
             this.groupBox5.TabIndex = 33;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "MySQL Dump Options";
+            this.groupBox5.Text = "MySQL Options";
             // 
             // tbRestoreCommandLine
             // 
@@ -1035,7 +1058,7 @@
             this.tbRestoreHostName.Name = "tbRestoreHostName";
             this.tbRestoreHostName.Size = new System.Drawing.Size(178, 20);
             this.tbRestoreHostName.TabIndex = 1;
-            this.tbRestoreHostName.Text = "localhost";
+            this.tbRestoreHostName.Text = "localhost";            
             // 
             // label18
             // 
@@ -1056,7 +1079,7 @@
             this.buRestoreMySQLRequestor.TabIndex = 9;
             this.buRestoreMySQLRequestor.Text = "...";
             this.buRestoreMySQLRequestor.UseVisualStyleBackColor = true;
-            this.buRestoreMySQLRequestor.Click += new System.EventHandler(this.buRestoreMySQLRequestor_Click);
+            this.buRestoreMySQLRequestor.Click += new System.EventHandler(this.BuRestoreMySQLRequestor_Click);
             // 
             // label19
             // 
@@ -1131,27 +1154,6 @@
             this.tbRestorePort.TabIndex = 2;
             this.tbRestorePort.Text = "3306";
             // 
-            // tsslCurrentConfig
-            // 
-            this.tsslCurrentConfig.Name = "tsslCurrentConfig";
-            this.tsslCurrentConfig.Size = new System.Drawing.Size(36, 17);
-            this.tsslCurrentConfig.Text = "None";
-            // 
-            // cmsDatabaseList
-            // 
-            this.cmsDatabaseList.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmiDatabaseInfo});
-            this.cmsDatabaseList.Name = "cmsDatabaseList";
-            this.cmsDatabaseList.Size = new System.Drawing.Size(175, 48);
-            // 
-            // tsmiDatabaseInfo
-            // 
-            this.tsmiDatabaseInfo.Enabled = false;
-            this.tsmiDatabaseInfo.Name = "tsmiDatabaseInfo";
-            this.tsmiDatabaseInfo.Size = new System.Drawing.Size(174, 22);
-            this.tsmiDatabaseInfo.Text = "View Database Info";
-            this.tsmiDatabaseInfo.Click += new System.EventHandler(this.tsmiDatabaseInfo_Click);
-            // 
             // frMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1167,7 +1169,8 @@
             this.MaximizeBox = false;
             this.Name = "frMain";
             this.Text = "MySQL Backup & Restore";
-            this.Load += new System.EventHandler(this.frMain_Load);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrMain_FormClosing);
+            this.Load += new System.EventHandler(this.FrMain_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -1179,6 +1182,7 @@
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.cmsDatabaseList.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
@@ -1186,7 +1190,6 @@
             this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            this.cmsDatabaseList.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

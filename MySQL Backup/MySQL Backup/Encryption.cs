@@ -263,7 +263,7 @@ namespace Encryption_Lib {
         /// </returns>
         /// <remarks>
         /// </remarks>
-        public static string sha256(string sha256key) {
+        public static string Sha256(string sha256key) {
             var hash = new Org.BouncyCastle.Crypto.Digests.Sha256Digest();
             byte[] msgBytes = Encoding.ASCII.GetBytes(sha256key);
             hash.BlockUpdate(msgBytes, 0, msgBytes.Length);

@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using MySql.Data.MySqlClient;
 using System.Net.Mail;
     
-public class utilityFunctions {       
+public class UtilityFunctions {       
     /// <summary>
     /// Displays an error message box.
     /// </summary>
@@ -19,7 +19,7 @@ public class utilityFunctions {
     /// <returns>
     /// Returns bool true if OK is clicked, otherwise it returns false.
     /// </returns> 
-    public static bool displayErrorMessage(string errorMessage, string caption, bool displayCancel) {
+    public static bool DisplayErrorMessage(string errorMessage, string caption, bool displayCancel) {
         if (displayCancel) {
             if (System.Windows.Forms.MessageBox.Show(errorMessage, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Error) == DialogResult.OK) {
                 return true;
@@ -48,7 +48,7 @@ public class utilityFunctions {
     /// <returns>
     /// Returns bool true if OK is clicked, otherwise it returns false.
     /// </returns> 
-    public static bool displayInformationMessage(string message, string caption, bool displayCancel) {
+    public static bool DisplayInformationMessage(string message, string caption, bool displayCancel) {
         if (displayCancel) {
             if (System.Windows.Forms.MessageBox.Show(message, caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Information) == DialogResult.OK) {
                 return true;
@@ -98,11 +98,13 @@ public class utilityFunctions {
         SmtpClient client = new SmtpClient(parameters[0]);
         if (parameters[1] != "") {
             client.Port = Convert.ToInt16(parameters[1]);
-        }           
+        }
         // Specify the message content.
-        MailMessage message = new MailMessage(new MailAddress(parameters[5]), new MailAddress(parameters[4]));
-        message.Body = parameters[7];
-        message.Subject = parameters[6];
+        MailMessage message = new MailMessage(new MailAddress(parameters[5]), new MailAddress(parameters[4]))
+        {
+            Body = parameters[7],
+            Subject = parameters[6]
+        };
         if (parameters[2] != "" && parameters[3] != "") {
             client.Credentials = new System.Net.NetworkCredential(parameters[2],parameters[3]);
         }           
@@ -190,7 +192,7 @@ public class utilityFunctions {
     /// <returns>
     /// none
     /// </returns>       
-    public static void textupdate(Form thisform) {
+    public static void Textupdate(Form thisform) {
         var lastColorSaved = System.Drawing.Color.Empty;
         foreach (System.Windows.Forms.Control child in thisform.Controls) {
             if (child is System.Windows.Forms.GroupBox) {
@@ -233,7 +235,7 @@ public class utilityFunctions {
     /// String type message
     /// </returns>
      
-    public static string schedulerErrors(string error) {
+    public static string SchedulerErrors(string error) {
             string message = "Unknown Result";
             switch (error) {
             case "0":
