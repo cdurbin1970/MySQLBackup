@@ -65,10 +65,6 @@
   <PropertyGroup />
   <PropertyGroup />
   <ItemGroup>
-    <Reference Include="AMS.Profile, Version=2.0.1874.1294, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\label-poller\Libraries\AMS.Profile.dll</HintPath>
-    </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
@@ -184,6 +180,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AMS.Profile\Profile.csproj">
+      <Project>{f8de8838-3350-4f1c-9b43-50dfe42db6a8}</Project>
+      <Name>Profile</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
