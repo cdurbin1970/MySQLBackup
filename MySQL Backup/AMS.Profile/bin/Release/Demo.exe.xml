@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<profile>
+  <section name="New Section">
+    <entry name="New Entry">MyValue2</entry>
+    <entry name="2nd Entry">MyNext Value</entry>
+  </section>
+  <section name="General">
+    <entry name="New General Entry">New Value</entry>
+  </section>
+  <section name="Version">
+    <entry name="Config Version">1.0</entry>
+  </section>
+</profile>
